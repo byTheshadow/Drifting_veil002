@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreamy Portfolio OS</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playball&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <!-- 使用 jsDelivr CDN 替代 Cloudflare -->
+    <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
     
     <style>
         :root {
@@ -82,6 +83,7 @@
             letter-spacing: 1px;
             pointer-events: none;
             z-index: 1;
+            transition: opacity 0.2s;
         }
 
         .boot-subtitle {
@@ -92,7 +94,6 @@
             opacity: 0.8;
         }
 
-        /* 滑动进度背景 */
         .slide-progress {
             position: absolute;
             left: 0; top: 0;
@@ -109,7 +110,6 @@
             opacity: 0; transition: opacity 1s; overflow: hidden;
         }
 
-        /* 背景层（支持自定义图片） */
         #background-layer {
             position: absolute; width: 100%; height: 100%;
             top: 0; left: 0;
@@ -118,13 +118,11 @@
             background-position: center;
         }
 
-        /* 滚动缩放层 */
         #zoom-layer {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
             transition: transform 0.15s ease-out; transform-origin: center;
         }
 
-        /* 黑色星星装饰 */
         .star-dec {
             position: absolute; width: 120px; height: 120px;
             pointer-events: none; opacity: 0.85; z-index: 0;
@@ -135,7 +133,6 @@
         .star-4 { bottom: -20px; right: 250px; width: 120px; height: 120px; }
         .star-5 { top: 50%; right: -50px; width: 150px; height: 150px; transform: translateY(-50%); }
 
-        /* ================= 玻璃拟态组件 ================= */
         .glass {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(25px);
@@ -146,7 +143,6 @@
             position: absolute; z-index: 10;
         }
 
-        /* ================= 翻页时钟 ================= */
         #clock-widget { top: 80px; left: 100px; padding: 25px; display: flex; flex-direction: column; align-items: center; }
         .clock-date { font-size: 1.2rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 15px; }
         .flip-group { display: flex; gap: 15px; }
@@ -167,7 +163,6 @@
             box-shadow: 0 1px 0 rgba(255,255,255,1);
         }
 
-        /* ================= 弹窗 ================= */
         .window-popup {
             min-width: 300px; padding-bottom: 20px;
             display: flex; flex-direction: column;
@@ -182,12 +177,10 @@
         .window-header:active { cursor: grabbing; }
         .window-content { padding: 20px; }
 
-        /* Portfolio 窗口 */
         #portfolio-window { top: 40%; left: 50%; transform: translate(-50%, -50%); width: 400px; }
         .portfolio-title { font-family: var(--font-title); font-size: 3.5rem; color: var(--color-accent); text-align: center; }
         .portfolio-desc { text-align: center; color: var(--color-text-gray); margin-top: 10px; font-weight: 600; }
 
-        /* 音乐播放器 */
         #music-window { top: 80px; right: 350px; width: 320px; }
         .music-flex { display: flex; align-items: center; gap: 15px; }
         .music-cover { width: 70px; height: 70px; background: #ddd; border-radius: 10px; overflow: hidden; }
@@ -196,7 +189,6 @@
         .music-info p { font-size: 0.8rem; color: var(--color-text-gray);}
         .music-controls { margin-top: 15px; display: flex; justify-content: center; gap: 20px; font-weight: bold; color: var(--color-text-dark); font-size: 1.2rem;}
 
-        /* ================= 桌面图标 ================= */
         #desktop-icons {
             position: absolute; right: 60px; top: 150px;
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -224,7 +216,6 @@
             transform: scale(1.1); box-shadow: 0 8px 20px rgba(242, 157, 128, 0.4);
         }
 
-        /* ================= 物理层 ================= */
         #physics-canvas {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 5; pointer-events: auto;
@@ -233,7 +224,6 @@
 </head>
 <body>
 
-    <!-- Apple 风格滑动解锁开屏 -->
     <div id="boot-screen">
         <div class="lock-container" id="lockContainer">
             <div class="slide-progress" id="slideProgress"></div>
@@ -245,28 +235,19 @@
         <div class="boot-subtitle" id="bootSubtitle">Dreamy Portfolio OS</div>
     </div>
 
-    <!-- 桌面系统 -->
     <div id="desktop">
-        
-        <!-- 背景层 -->
         <div id="background-layer"></div>
         
-        <!-- 滚动缩放层 -->
         <div id="zoom-layer">
-            
-            <!-- SVG 黑星星装饰 -->
             <svg class="star-dec star-1" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
             <svg class="star-dec star-2" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
             <svg class="star-dec star-3" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
             <svg class="star-dec star-4" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
             <svg class="star-dec star-5" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke-width="2"/></svg>
 
-            <!-- 物理掉落层 -->
             <div id="physics-canvas"></div>
-            
         </div>
 
-        <!-- 时钟挂件 -->
         <div id="clock-widget" class="glass">
             <div class="clock-date" id="date-display">Monday, 20 May</div>
             <div class="flip-group">
@@ -276,7 +257,6 @@
             </div>
         </div>
 
-        <!-- Portfolio 弹窗 -->
         <div id="portfolio-window" class="glass window-popup">
             <div class="window-header" id="portfolio-header">
                 <span>Sticky Note.txt</span>
@@ -287,7 +267,6 @@
             </div>
         </div>
 
-        <!-- 音乐播放器弹窗 -->
         <div id="music-window" class="glass window-popup">
             <div class="window-header" id="music-header">
                 <span>Music Player</span>
@@ -306,18 +285,18 @@
             </div>
         </div>
 
-        <!-- 桌面图标网格 -->
         <div id="desktop-icons"></div>
-
     </div>
 
-    <!-- 引入数据配置 -->
     <script src="data.js"></script>
     
     <script>
-        // ================= 1. 初始化数据 =================
+        // 检查 Matter.js 是否加载成功
+        if (typeof Matter === 'undefined') {
+            console.error('Matter.js 加载失败，物理效果将不可用');
+        }
+
         function initData() {
-            // 设置背景
             const bgLayer = document.getElementById('background-layer');
             if (siteData.background.useCustomImage && siteData.background.customImageUrl) {
                 bgLayer.style.backgroundImage = `url(${siteData.background.customImageUrl})`;
@@ -325,15 +304,12 @@
                 bgLayer.style.background = `radial-gradient(circle at 50% 50%, ${siteData.background.gradientColors.center} 0%, ${siteData.background.gradientColors.edge} 100%)`;
             }
 
-            // 设置开屏文字
             document.getElementById('slideText').innerText = siteData.bootScreen.text;
             document.getElementById('bootSubtitle').innerText = siteData.bootScreen.subText;
 
-            // 设置 Portfolio 信息
             document.getElementById('portfolioTitle').innerHTML = siteData.siteName.replace("'s", "'s<br>");
             document.getElementById('portfolioDesc').innerText = siteData.subtitle;
 
-            // 设置音乐播放器
             if (siteData.musicPlayer.show) {
                 document.getElementById('musicTitle').innerText = siteData.musicPlayer.title;
                 document.getElementById('musicArtist').innerText = siteData.musicPlayer.artist;
@@ -344,7 +320,6 @@
                 document.getElementById('music-window').style.display = 'none';
             }
 
-            // 生成桌面图标
             const iconsContainer = document.getElementById('desktop-icons');
             siteData.desktopIcons.forEach(icon => {
                 const iconEl = document.createElement('div');
@@ -364,7 +339,6 @@
             alert(`导航到: ${action} 页面\n（后续会实现页面跳转）`);
         }
 
-        // ================= 2. Apple 滑动解锁 =================
         function initSlideUnlock() {
             const container = document.getElementById('lockContainer');
             const button = document.getElementById('slideButton');
@@ -381,33 +355,35 @@
 
             function startDrag(e) {
                 isDragging = true;
-                startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                const rect = button.getBoundingClientRect();
+                startX = (e.type === 'mousedown' ? e.clientX : e.touches[0].clientX) - rect.left;
                 document.addEventListener('mousemove', onDrag);
                 document.addEventListener('touchmove', onDrag);
                 document.addEventListener('mouseup', stopDrag);
                 document.addEventListener('touchend', stopDrag);
+                e.preventDefault();
             }
 
             function onDrag(e) {
                 if (!isDragging) return;
+                const containerRect = container.getBoundingClientRect();
                 const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
-                currentX = Math.max(0, Math.min(maxSlide, clientX - startX));
+                currentX = Math.max(0, Math.min(maxSlide, clientX - containerRect.left - startX));
                 
                 button.style.transform = `translateX(${currentX}px)`;
                 progress.style.width = `${(currentX / maxSlide) * 100}%`;
                 text.style.opacity = 1 - (currentX / maxSlide);
 
-                // 完成解锁
                 if (currentX >= maxSlide * 0.9) {
                     unlock();
                 }
+                e.preventDefault();
             }
 
             function stopDrag() {
                 if (!isDragging) return;
                 isDragging = false;
                 
-                // 未完成则回弹
                 if (currentX < maxSlide * 0.9) {
                     button.style.transition = 'transform 0.3s ease-out';
                     button.style.transform = 'translateX(0)';
@@ -438,29 +414,81 @@
                         document.getElementById('boot-screen').style.display = 'none';
                         document.getElementById('desktop').style.opacity = '1';
                         initClock();
-                        initPhysics();
+                        if (typeof Matter !== 'undefined') {
+                            initPhysics();
+                        }
                     }, 600);
                 }, 300);
             }
         }
 
-        // ================= 3. 时钟 =================
         function initClock() {
             const hEl = document.getElementById('hours');
             const mEl = document.getElementById('minutes');
             const dEl = document.getElementById('date-display');
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];                e.clientY;
-                pos3 = e.clientX; pos4 = e.clientY;
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            function update() {
+                const now = new Date();
+                hEl.innerText = now.getHours().toString().padStart(2, '0');
+                mEl.innerText = now.getMinutes().toString().padStart(2, '0');
+                dEl.innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+            }
+            update(); 
+            setInterval(update, 1000);
+        }
+
+        let zoomLevel = 1;
+        const zoomLayer = document.getElementById('zoom-layer');
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY < 0) zoomLevel += 0.05;
+            else zoomLevel -= 0.05;
+            zoomLevel = Math.min(Math.max(1, zoomLevel), 1.3);
+            zoomLayer.style.transform = `scale(${zoomLevel})`;
+        });
+
+        function makeDraggable(elmnt, headerId) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = document.getElementById(headerId);
+            if (!header) return;
+            
+            header.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event; 
+                e.preventDefault();
+                pos3 = e.clientX; 
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                document.querySelectorAll('.window-popup').forEach(w => w.style.zIndex = 10);
+                elmnt.style.zIndex = 11;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event; 
+                e.preventDefault();
+                pos1 = pos3 - e.clientX; 
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; 
+                pos4 = e.clientY;
                 elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
                 elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
             }
+            
             function closeDragElement() {
-                document.onmouseup = null; document.onmousemove = null;
+                document.onmouseup = null; 
+                document.onmousemove = null;
             }
         }
 
-        // ================= 6. Matter.js 物理掉落 =================
         function initPhysics() {
+            if (typeof Matter === 'undefined') {
+                console.warn('Matter.js 未加载，跳过物理效果');
+                return;
+            }
+
             const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
             const engine = Engine.create();
             const width = window.innerWidth, height = window.innerHeight;
@@ -471,7 +499,6 @@
                 options: { width, height, background: 'transparent', wireframes: false }
             });
 
-            // 扩充掉落物件数组
             const itemUrls = [];
             for(let i = 0; i < siteData.fallingItemsCount; i++) {
                 itemUrls.push(siteData.fallingItems[i % siteData.fallingItems.length]);
@@ -479,10 +506,9 @@
 
             const items = [];
             
-            // 陆续掉落
             itemUrls.forEach((url, index) => {
                 setTimeout(() => {
-                    const xPos = Math.random() * (width - 300) + 150;
+                                        const xPos = Math.random() * (width - 300) + 150;
                     const scale = 0.07 + (Math.random() * 0.03); 
                     const body = Bodies.circle(xPos, -50, 45, {
                         restitution: 0.9,
@@ -494,13 +520,11 @@
                 }, index * 250);
             });
 
-            // 边界
             const ground = Bodies.rectangle(width/2, height+25, width, 50, { isStatic: true, render:{visible:false} });
             const left = Bodies.rectangle(-25, height/2, 50, height, { isStatic: true, render:{visible:false} });
             const right = Bodies.rectangle(width+25, height/2, 50, height, { isStatic: true, render:{visible:false} });
             Composite.add(engine.world, [ground, left, right]);
 
-            // 鼠标交互
             const mouse = Mouse.create(render.canvas);
             const mConstraint = MouseConstraint.create(engine, {
                 mouse: mouse,
@@ -532,7 +556,6 @@
             });
         }
 
-        // ================= 7. 页面加载 =================
         window.onload = () => {
             initData();
             initSlideUnlock();
@@ -543,40 +566,3 @@
 </body>
 </html>
 
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-            function update() {
-                const now = new Date();
-                hEl.innerText = now.getHours().toString().padStart(2, '0');
-                mEl.innerText = now.getMinutes().toString().padStart(2, '0');
-                dEl.innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-            }
-            update(); setInterval(update, 1000);
-        }
-
-        // ================= 4. 滚轮缩放 =================
-        let zoomLevel = 1;
-        const zoomLayer = document.getElementById('zoom-layer');
-        window.addEventListener('wheel', (e) => {
-            if (e.deltaY < 0) zoomLevel += 0.05;
-            else zoomLevel -= 0.05;
-            zoomLevel = Math.min(Math.max(1, zoomLevel), 1.3);
-            zoomLayer.style.transform = `scale(${zoomLevel})`;
-        });
-
-        // ================= 5. 弹窗拖拽 =================
-        function makeDraggable(elmnt, headerId) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            document.getElementById(headerId).onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                e = e || window.event; e.preventDefault();
-                pos3 = e.clientX; pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-                document.querySelectorAll('.window-popup').forEach(w => w.style.zIndex = 10);
-                elmnt.style.zIndex = 11;
-            }
-            function elementDrag(e) {
-                e = e || window.event; e.preventDefault();
-                pos1 = pos3 - e.clientX; pos2 = pos4 -
