@@ -3,75 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Cards - Sweet Binder</title>
+    <title>Character Cards - Sweet Notepad</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Nunito:wght@400;600;700;800&family=Dancing+Script:wght@400;700&family=Satisfy&display=swap" rel="stylesheet">
+    <!-- 字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,500&family=Nunito:wght@400;600;800;900&family=Satisfy&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     
+    <!-- 中文可爱字体 -->
     <style>
         @import url("https://fontsapi.zeoseven.com/850/main/result.css");
         @import url("https://fontsapi.zeoseven.com/802/main/result.css");
-        @import url("https://fontsapi.zeoseven.com/282/main/result.css");
-        /* 白粉弥散粒子效果 */
-.particles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.particle {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(250, 216, 223, 0.3));
-    animation: float-up linear infinite;
-    opacity: 0;
-}
-
-@keyframes float-up {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.6;
-    }
-    50% {
-        opacity: 0.8;
-    }
-    90% {
-        opacity: 0.3;
-    }
-    100% {
-        transform: translateY(-100vh) translateX(var(--drift)) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-.particle.pink {
-    background: radial-gradient(circle, rgba(250, 216, 223, 0.9), rgba(242, 157, 128, 0.2));
-}
-
-.particle.white {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 243, 232, 0.3));
-}
-
     </style>
     
     <style>
         :root {
-            --bg-desktop: #FFF3E8;
-            --book-white: #FFFFFF;
-            --accent-pink: #FAD8DF;
-            --accent-coral: #F29D80;
-            --text-dark: #333333;
-            --text-gray: #888888;
+            --color-bg: #FAD8DF;
+            --color-paper: #FFFFFF;
+            --color-accent: #F29D80;
+            --color-text-dark: #333333;
+            --color-text-gray: #888888;
+            --color-cream: #FFF3E8;
+            
             --font-title: 'Playfair Display', serif;
             --font-body: 'Nunito', sans-serif;
-            --font-handwrite: 'Dancing Script', cursive;
+            --font-hand: 'Satisfy', cursive;
+            --font-elegant: 'Dancing Script', cursive;
             --font-cute-cn: 'KeinannMaruPOP', sans-serif;
         }
 
@@ -83,280 +38,201 @@
         }
 
         body {
-            background-color: var(--bg-desktop);
+            background-color: var(--color-bg);
+            background-image: radial-gradient(circle at 50% 50%, var(--color-cream) 0%, transparent 80%);
             display: flex; 
             justify-content: center; 
             align-items: center;
             min-height: 100vh; 
             font-family: var(--font-body); 
-            color: var(--text-dark);
+            color: var(--color-text-dark);
             overflow: hidden;
+        }
+
+        /* ================= 记事本主容器 ================= */
+        .notepad-wrapper {
             position: relative;
+            width: 900px; 
+            height: 820px;
+            margin-top: 20px;
         }
 
-        .back-button {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            z-index: 200;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(242, 157, 128, 0.2);
-            transition: all 0.3s;
-            font-size: 1.5rem;
-            color: var(--accent-coral);
-        }
-
-        .back-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(242, 157, 128, 0.4);
-        }
-
-        .scene {
-            width: 1100px; 
-            height: 750px;
-            perspective: 2500px;
-            position: relative;
-        }
-
-        .book {
-            width: 100%; 
-            height: 100%; 
-            position: relative;
-            transform-style: preserve-3d;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-            border-radius: 12px;
-        }
-
-        .static-page {
-            position: absolute; 
-            top: 0; 
-            width: 50%; 
-            height: 100%;
-            background: var(--book-white); 
-            padding: 50px 60px;
-            display: flex; 
-            flex-direction: column;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        .static-left { 
-            left: 0; 
-            border-radius: 12px 0 0 12px; 
-            border-right: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .static-right { 
-            right: 0; 
-            border-radius: 0 12px 12px 0; 
-            border-left: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /*
-         * 遮罩层：z-index=15，夹在 static(1) 和 flipper(20) 之间。
-         * 翻页动画期间显示，结束后隐藏。
-         * 内容与被遮住的 static 页完全相同，视觉上无缝衔接。
-         */
-        .page-cover {
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            background: var(--book-white);
-            z-index: 15;
-            display: none;
-            padding: 50px 60px;
-            overflow: hidden;
-            flex-direction: column;
-        }
-
-        .page-cover.cover-right {
-            right: 0;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .page-cover.cover-left {
-            left: 0;
-            border-radius: 12px 0 0 12px;
-        }
-
-        .flipper {
-            position: absolute; 
-            top: 0; 
-            left: 50%; 
-            width: 50%; 
-            height: 100%;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            z-index: 20;
-            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
-            pointer-events: none;
-        }
-        
-        .flipper.is-flipped {
-            transform: rotateY(-180deg);
-        }
-
-        .flip-face {
-            position: absolute; 
-            top: 0; 
-            left: 0; 
+        .notepad {
             width: 100%; 
             height: 100%;
-            background: var(--book-white); 
-            padding: 50px 60px;
-            backface-visibility: hidden;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
-            overflow: hidden;
-        }
-        
-        .flip-front {
-            border-radius: 0 12px 12px 0;
-            z-index: 2;
-        }
-        
-        .flip-back {
-            transform: rotateY(180deg);
-            border-radius: 12px 0 0 12px;
-            z-index: 1;
+            background: var(--color-paper);
+            border-radius: 12px 12px 20px 20px;
+            box-shadow: 
+                0 30px 60px rgba(242, 157, 128, 0.2),
+                inset 0 0 50px rgba(0,0,0,0.02);
+            position: relative; 
+            z-index: 10;
+            display: flex; 
+            flex-direction: column;
+            padding: 50px 60px 40px 60px;
         }
 
-        .binder-spine {
+        /* ================= 顶部线圈装订 ================= */
+        .spirals-container {
             position: absolute; 
-            top: 0; 
-            left: 50%; 
-            width: 40px; 
-            height: 100%;
-            transform: translateX(-50%); 
-            z-index: 100; 
-            pointer-events: none;
+            top: -15px; 
+            left: 0; 
+            width: 100%;
             display: flex; 
-            flex-direction: column; 
             justify-content: space-evenly; 
-            align-items: center;
-        }
-        
-        .ring {
-            width: 55px; 
-            height: 16px;
-            background: linear-gradient(to bottom, #f2f2f2 0%, #d4d4d4 30%, #e0e0e0 70%, #a3a3a3 100%);
-            border-radius: 8px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-            position: relative;
+            padding: 0 40px;
+            z-index: 20; 
+            pointer-events: none;
         }
 
-        .tabs { 
+        .spiral {
+            width: 12px; 
+            height: 35px;
+            background: linear-gradient(to right, #e0e0e0 0%, #ffffff 30%, #a3a3a3 100%);
+            border-radius: 6px;
+            box-shadow: 2px 5px 5px rgba(0,0,0,0.15), inset 0 1px 2px white;
+            position: relative;
+        }
+        
+        .spiral::after {
+            content: ''; 
             position: absolute; 
-            right: -55px; 
-            top: 50px; 
+            bottom: 4px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 14px; 
+            height: 14px; 
+            background: #222; 
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); 
+            z-index: -1;
+        }
+
+        /* ================= 右侧索引 Tabs ================= */
+        .tabs {
+            position: absolute; 
+            right: -60px; 
+            top: 60px;
             display: flex; 
             flex-direction: column; 
-            gap: 15px; 
-            z-index: 5; 
+            gap: 12px; 
+            z-index: 5;
         }
         
         .tab {
-            background: var(--accent-pink); 
-            padding: 15px 10px; 
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(5px);
+            padding: 15px 12px; 
             writing-mode: vertical-rl;
-            border-radius: 0 8px 8px 0; 
-            font-weight: 700; 
+            border-radius: 0 12px 12px 0; 
+            font-weight: 800; 
             color: #db7681;
             cursor: pointer; 
-            transition: 0.3s; 
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 2px 5px 15px rgba(0,0,0,0.05); 
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.8); 
+            border-left: none;
             font-family: var(--font-cute-cn);
         }
         
-        .tab.active { 
-            background: var(--book-white); 
-            color: var(--accent-coral); 
-            transform: translateX(10px); 
-        }
-
-        .click-zone { 
-            position: absolute; 
-            top: 0; 
-            width: 50%; 
-            height: 100%; 
-            cursor: pointer; 
-            z-index: 10; 
+        .tab:hover { 
+            background: rgba(255, 255, 255, 0.9); 
         }
         
-        .click-left { left: 0; }
-        .click-right { right: 0; }
+        .tab.active {
+            background: var(--color-paper); 
+            color: var(--color-accent);
+            transform: translateX(10px); 
+            width: 60px; 
+            padding-left: 15px;
+            box-shadow: 5px 10px 20px rgba(242, 157, 128, 0.2); 
+            border-color: transparent;
+        }
 
-        .char-header { 
+        /* ================= 内容区域 ================= */
+        .content-area {
+            flex: 1; 
+            display: flex; 
+            flex-direction: column;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .content-area.fade-out { 
+            opacity: 0; 
+            transform: translateY(15px); 
+        }
+
+        /* 头部：名字与标签 */
+        .header-area { 
             display: flex; 
             justify-content: space-between; 
-            border-top: 2px solid var(--accent-coral); 
-            padding-top: 10px; 
-            margin-bottom: 20px; 
-            font-size: 0.8rem; 
-            font-weight: 800; 
-            color: var(--accent-coral); 
-            letter-spacing: 2px; 
+            align-items: flex-end; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--color-accent); 
+            padding-bottom: 15px; 
         }
         
         .char-name { 
-            font-family: var(--font-handwrite); 
-            font-size: 3.5rem; 
-            line-height: 1.1; 
-            margin-bottom: 5px;
-            color: var(--text-dark);
+            font-family: var(--font-elegant); 
+            font-size: 4.5rem; 
+            line-height: 0.9; 
+            color: var(--color-text-dark); 
+            letter-spacing: -1px; 
         }
         
         .char-name-en {
             font-family: var(--font-title);
             font-style: italic;
-            font-size: 1.8rem;
-            color: var(--text-gray);
-            margin-bottom: 10px;
+            font-size: 2rem;
+            color: var(--color-text-gray);
+            margin-top: 5px;
+        }
+        
+        .char-meta { 
+            text-align: right; 
+        }
+        
+        .char-group { 
+            font-size: 0.8rem; 
+            font-weight: 900; 
+            color: var(--color-accent); 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
         }
         
         .char-date { 
             font-family: var(--font-title); 
             font-style: italic; 
             font-size: 1.2rem; 
-            color: var(--text-gray); 
+            color: var(--color-text-gray); 
+        }
+
+        /* 中部：照片 + 信息分栏 */
+        .split-area { 
+            display: flex; 
+            gap: 40px; 
             margin-bottom: 30px; 
         }
         
-        .content-split { 
-            display: flex; 
-            gap: 30px; 
-            flex: 1; 
-        }
-        
-        .col-left { flex: 1; }
-        
-        .col-right { 
-            flex: 1.3; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 30px; 
-        }
-        
-        .avatar-box { 
-            width: 100%; 
-            aspect-ratio: 3/4; 
-            background: var(--accent-pink); 
+        .avatar-box {
+            width: 280px; 
+            height: 350px; 
+            background: var(--color-cream);
             border-radius: 12px; 
             overflow: hidden; 
-            box-shadow: 0 10px 20px rgba(242, 157, 128, 0.1);
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
+            flex-shrink: 0;
+            border: 8px solid white;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
+        }
+        
+        .avatar-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(242, 157, 128, 0.2);
         }
         
         .avatar-box::after {
@@ -375,11 +251,6 @@
             transition: opacity 0.3s;
         }
         
-        .avatar-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(242, 157, 128, 0.3);
-        }
-        
         .avatar-box:hover::after {
             opacity: 1;
         }
@@ -390,429 +261,307 @@
             object-fit: cover; 
         }
         
-        .section-title { 
-            font-family: var(--font-handwrite); 
-            font-size: 1.8rem; 
-            margin-bottom: 15px;
-            color: var(--accent-coral);
+        /* 照片胶带装饰 */
+        .tape { 
+            position: absolute; 
+            top: -10px; 
+            left: 50%; 
+            transform: translateX(-50%) rotate(-3deg); 
+            width: 80px; 
+            height: 25px; 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(2px); 
+            z-index: 10; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .info-box { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
         }
         
+        .section-title { 
+            font-family: var(--font-elegant); 
+            font-size: 1.8rem; 
+            color: var(--color-accent); 
+            margin-bottom: 10px; 
+        }
+        
+        /* 标签容器 */
         .tags-container {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .tag {
-            background: var(--accent-pink);
-            color: var(--accent-coral);
+            background: var(--color-accent);
+            color: white;
             padding: 6px 15px;
             border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             font-family: var(--font-cute-cn);
+            box-shadow: 0 2px 8px rgba(242, 157, 128, 0.3);
+        }
+        
+        /* 任务列表 */
+        .task-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
         }
         
         .task-item { 
             display: flex; 
             gap: 12px; 
-            margin-bottom: 12px; 
             align-items: flex-start; 
         }
         
         .task-circle { 
-            width: 18px; 
-            height: 18px; 
+            width: 22px; 
+            height: 22px; 
             border-radius: 50%; 
             border: 2px solid #ccc; 
             flex-shrink: 0; 
-            margin-top: 4px; 
+            margin-top: 2px; 
             position: relative; 
+            transition: 0.2s; 
         }
         
         .task-item.checked .task-circle { 
-            border-color: var(--accent-coral); 
+            border-color: var(--color-accent); 
             background: rgba(242, 157, 128, 0.1); 
         }
         
         .task-item.checked .task-circle::after { 
             content: '✔'; 
             position: absolute; 
-            top: -4px; 
-            left: 2px; 
-            color: var(--accent-coral); 
-            font-size: 12px; 
+            top: -2px; 
+            left: 4px; 
+            color: var(--color-accent); 
+            font-size: 14px; 
+            font-weight: 900;
         }
         
         .task-text { 
-            font-size: 0.9rem; 
-            line-height: 1.4; 
+            font-size: 1rem; 
+            color: var(--color-text-dark); 
+            line-height: 1.5; 
+            font-weight: 600; 
         }
         
         .task-item.checked .task-text { 
             color: #aaa; 
             text-decoration: line-through; 
-        }
-        
-        .journal-box { 
-            font-family: var(--font-handwrite); 
-            color: var(--text-gray); 
-            line-height: 1.8; 
-            border-top: 1px dashed #eee; 
-            padding-top: 15px;
-            font-size: 1rem;
+            text-decoration-thickness: 2px; 
+            text-decoration-color: var(--color-bg); 
         }
 
-        @media (max-width: 1200px) {
-            .scene { width: 90vw; height: 70vh; }
-            .static-page, .flip-face, .page-cover { padding: 30px 40px; }
-            .char-name { font-size: 2.5rem; }
-            .tabs { right: -45px; gap: 10px; }
+        /* 底部：日记本区域 */
+        .journal-area {
+            flex: 1; 
+            position: relative; 
+            padding-top: 15px;
+            background-image: repeating-linear-gradient(
+                transparent, 
+                transparent 34px, 
+                rgba(0,0,0,0.06) 34px, 
+                rgba(0,0,0,0.06) 35px
+            );
+        }
+        
+        .journal-text {
+            font-family: var(--font-hand); 
+            font-size: 1.8rem; 
+            color: #555;
+            line-height: 35px;
+            padding-top: 2px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .notepad-wrapper {
+                width: 90vw;
+                height: 90vh;
+            }
+            
+            .notepad {
+                padding: 40px 40px;
+            }
+            
+            .char-name {
+                font-size: 3.5rem;
+            }
+            
+            .split-area {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .avatar-box {
+                width: 100%;
+                max-width: 350px;
+            }
         }
 
         @media (max-width: 768px) {
-            .scene { width: 95vw; height: 60vh; }
-            .static-page, .flip-face, .page-cover { padding: 20px 25px; }
-            .char-name { font-size: 2rem; }
-            .content-split { flex-direction: column; gap: 20px; }
-            .tabs { display: none; }
+            .notepad {
+                padding: 30px 25px;
+            }
+            
+            .char-name {
+                font-size: 2.5rem;
+            }
+            
+            .tabs {
+                display: none;
+            }
+            
+            .journal-text {
+                font-size: 1.4rem;
+                line-height: 30px;
+            }
         }
+
     </style>
 </head>
 <body>
-    <div class="particles-container" id="particles"></div>
 
-    <div class="back-button" onclick="goBack()">←</div>
-
-    <div class="scene">
-        <div class="book">
-            <div class="binder-spine">
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
-            </div>
-
-            <div class="tabs" id="tabs-container"></div>
-
-            <!-- 底层静态页 z-index:1 -->
-            <div class="static-page static-left"  id="static-left"></div>
-            <div class="static-page static-right" id="static-right"></div>
-
-            <!-- 遮罩层 z-index:15，动画期间遮住对应的 static 页 -->
-            <div class="page-cover cover-right" id="cover-right"></div>
-            <div class="page-cover cover-left"  id="cover-left"></div>
-
-            <!-- 翻页纸 z-index:20 -->
-            <div class="flipper" id="flipper">
-                <div class="flip-face flip-front" id="flip-front"></div>
-                <div class="flip-face flip-back"  id="flip-back"></div>
-            </div>
-
-            <div class="click-zone click-left"  onclick="prev()"></div>
-            <div class="click-zone click-right" onclick="next()"></div>
+    <div class="notepad-wrapper">
+        
+        <!-- 顶部金属线圈 -->
+        <div class="spirals-container">
+            <script>for(let i=0; i<18; i++) document.write('<div class="spiral"></div>');</script>
         </div>
+
+        <!-- 侧边切换标签 -->
+        <div class="tabs" id="tabs-container"></div>
+
+        <!-- 记事本主纸张 -->
+        <div class="notepad">
+            <div class="content-area" id="content-area"></div>
+        </div>
+
     </div>
 
+    <!-- 引入数据和导航组件 -->
     <script src="characters-data.js"></script>
-
+    <script src="nav-component.js"></script>
+    
     <script>
-        function getCharHTML(char) {
-            return `
-                <div class="char-header">
-                    <span>CHAR ${char.no}</span>
-                    <span>${char.group}</span>
+        const contentArea = document.getElementById('content-area');
+        const tabsContainer = document.getElementById('tabs-container');
+        let currentIndex = 0;
+
+        /* ================= 渲染 Tabs ================= */
+        function initTabs() {
+            charactersData.forEach((char, index) => {
+                const tab = document.createElement('div');
+                tab.className = `tab ${index === 0 ? 'active' : ''}`;
+                tab.innerText = `角色 ${char.no}`;
+                tab.onclick = () => switchCharacter(index);
+                tabsContainer.appendChild(tab);
+            });
+        }
+
+        /* ================= 渲染页面内容 ================= */
+        function renderContent(index) {
+            const char = charactersData[index];
+            
+            // 生成标签 HTML
+            const tagsHTML = char.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            // 生成任务列表 HTML
+            const tasksHTML = char.tasks.map(task => `
+                <div class="task-item ${task.checked ? 'checked' : ''}">
+                    <div class="task-circle"></div>
+                    <div class="task-text">${task.text}</div>
                 </div>
-                <h1 class="char-name">${char.name}</h1>
-                <div class="char-name-en">${char.nameEn}</div>
-                <div class="char-date">${char.date}</div>
-                <div class="content-split">
-                    <div class="col-left">
-                        <div class="avatar-box" onclick="goToDetail('${char.id}')">
-                            <img src="${char.avatar}" alt="${char.name}">
-                        </div>
+            `).join('');
+
+            // 处理日记换行
+            const journalFormatted = char.journal.replace(/\n/g, '<br>');
+
+            contentArea.innerHTML = `
+                <div class="header-area">
+                    <div>
+                        <h1 class="char-name">${char.name}</h1>
+                        <div class="char-name-en">${char.nameEn}</div>
                     </div>
-                    <div class="col-right">
+                    <div class="char-meta">
+                        <div class="char-group">${char.group}</div>
+                        <div class="char-date">${char.date}</div>
+                    </div>
+                </div>
+
+                <div class="split-area">
+                    <div class="avatar-box" onclick="goToDetail('${char.id}')">
+                        <div class="tape"></div>
+                        <img src="${char.avatar}" alt="${char.name}">
+                    </div>
+                    
+                    <div class="info-box">
                         <div>
                             <h2 class="section-title">Tags</h2>
-                            <div class="tags-container">
-                                ${char.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
+                            <div class="tags-container">${tagsHTML}</div>
                         </div>
+                        
                         <div>
                             <h2 class="section-title">To-Do List</h2>
-                            ${char.tasks.map(t => `
-                                <div class="task-item ${t.checked ? 'checked' : ''}">
-                                    <div class="task-circle"></div>
-                                    <div class="task-text">${t.text}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div style="margin-top:auto">
-                            <h2 class="section-title">Journal</h2>
-                            <div class="journal-box">${char.journal}</div>
+                            <div class="task-list">${tasksHTML}</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="journal-area">
+                    <h2 class="section-title" style="margin-bottom:5px;">Journal & Notes</h2>
+                    <div class="journal-text">${journalFormatted}</div>
                 </div>
             `;
         }
 
-        let currentPage = 0;
-        let isLocked    = false;
+        /* ================= 切换逻辑与动效 ================= */
+        let isAnimating = false;
 
-        const flipper     = document.getElementById('flipper');
-        const staticLeft  = document.getElementById('static-left');
-        const staticRight = document.getElementById('static-right');
-        const flipFront   = document.getElementById('flip-front');
-        const flipBack    = document.getElementById('flip-back');
-        const coverRight  = document.getElementById('cover-right');
-        const coverLeft   = document.getElementById('cover-left');
+        function switchCharacter(index) {
+            if (isAnimating || index === currentIndex) return;
+            isAnimating = true;
 
-        const totalPages = Math.ceil(charactersData.length / 2);
+            // 更新 Tab 状态
+            const tabs = document.querySelectorAll('.tab');
+            tabs[currentIndex].classList.remove('active');
+            tabs[index].classList.add('active');
+            
+            currentIndex = index;
 
-        function initTabs() {
-            const container = document.getElementById('tabs-container');
-            for (let i = 0; i < totalPages; i++) {
-                const tab = document.createElement('div');
-                tab.className = 'tab' + (i === 0 ? ' active' : '');
-                tab.textContent = `PAGE ${i + 1}`;
-                tab.onclick = () => jumpTo(i);
-                container.appendChild(tab);
-            }
-        }
+            // 内容淡出
+            contentArea.classList.add('fade-out');
 
-        function updateTabs() {
-            document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', i === currentPage);
-            });
-        }
-
-        function initPages() {
-            staticLeft.innerHTML = getCharHTML(charactersData[0]);
-            if (charactersData[1]) {
-                staticRight.innerHTML = getCharHTML(charactersData[1]);
-            }
-        }
-
-        // ── 下一页（向左翻） ─────────────────────────────────────────────
-        //
-        //  动画前：
-        //    staticLeft  = 当前左页（不动）
-        //    coverRight  = 当前右页（盖住 staticRight，防止中途裸露）← 新增
-        //    flipFront   = 当前右页（与 coverRight 内容相同，形成无缝翻页）
-        //    flipBack    = 下一页左页
-        //    staticRight = 【趁遮罩挡住时】换成下一页右页
-        //
-        //  动画后（800ms）：
-        //    staticLeft  = 下一页左页
-        //    coverRight  隐藏
-        //    staticRight = 下一页右页（已在动画前换好，现在才显露）
-        //
-        function next() {
-            if (isLocked || currentPage >= totalPages - 1) return;
-            isLocked = true;
-
-            const curRightIdx  = currentPage * 2 + 1;
-            const nextLeftIdx  = (currentPage + 1) * 2;
-            const nextRightIdx = (currentPage + 1) * 2 + 1;
-
-            // 1. 遮罩显示当前右页内容，遮住 staticRight
-            coverRight.innerHTML = charactersData[curRightIdx]
-                ? getCharHTML(charactersData[curRightIdx]) : '';
-            coverRight.style.display = 'flex';
-
-            // 2. 翻页纸：正面=当前右页，背面=下一页左页
-            flipFront.innerHTML = charactersData[curRightIdx]
-                ? getCharHTML(charactersData[curRightIdx]) : '';
-            flipBack.innerHTML  = charactersData[nextLeftIdx]
-                ? getCharHTML(charactersData[nextLeftIdx]) : '';
-
-            // 3. 趁遮罩挡住，偷偷换掉 staticRight
-            staticRight.innerHTML = charactersData[nextRightIdx]
-                ? getCharHTML(charactersData[nextRightIdx])
-                : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:1.5rem;">End ♡</div>';
-
-            // 4. 启动翻页动画
-            flipper.classList.add('is-flipped');
-
+            // 等待淡出结束后，更新内容并淡入
             setTimeout(() => {
-                currentPage++;
-
-                // 5. 动画结束：更新 staticLeft，撤掉遮罩
-                staticLeft.innerHTML = charactersData[nextLeftIdx]
-                    ? getCharHTML(charactersData[nextLeftIdx]) : '';
-                coverRight.style.display = 'none';
-
-                // 6. 瞬间复位翻页纸
-                flipper.style.transition = 'none';
-                flipper.classList.remove('is-flipped');
-                setTimeout(() => {
-                    flipper.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)';
-                    isLocked = false;
-                    updateTabs();
-                }, 50);
-            }, 800);
+                renderContent(index);
+                contentArea.classList.remove('fade-out');
+                
+                setTimeout(() => { isAnimating = false; }, 400);
+            }, 300);
         }
 
-        // ── 上一页（向右翻） ─────────────────────────────────────────────
-        //
-        //  动画前：
-        //    staticRight = 当前右页（不动）
-        //    coverLeft   = 当前左页（盖住 staticLeft，防止中途裸露）← 新增
-        //    flipBack    = 当前左页（与 coverLeft 内容相同）
-        //    flipFront   = 上一页右页
-        //    staticLeft  = 【趁遮罩挡住时】换成上一页左页
-        //
-        //  动画后（800ms）：
-        //    staticRight = 上一页右页
-        //    coverLeft   隐藏
-        //    staticLeft  = 上一页左页（已在动画前换好，现在才显露）
-        //
-        function prev() {
-            if (isLocked || currentPage <= 0) return;
-            isLocked = true;
-
-            const curLeftIdx   = currentPage * 2;
-            const prevLeftIdx  = (currentPage - 1) * 2;
-            const prevRightIdx = (currentPage - 1) * 2 + 1;
-
-            // 1. 遮罩显示当前左页内容，遮住 staticLeft
-            coverLeft.innerHTML = charactersData[curLeftIdx]
-                ? getCharHTML(charactersData[curLeftIdx]) : '';
-            coverLeft.style.display = 'flex';
-
-            // 2. 翻页纸：正面=上一页右页，背面=当前左页
-            flipFront.innerHTML = charactersData[prevRightIdx]
-                ? getCharHTML(charactersData[prevRightIdx]) : '';
-            flipBack.innerHTML  = charactersData[curLeftIdx]
-                ? getCharHTML(charactersData[curLeftIdx]) : '';
-
-            // 3. 趁遮罩挡住，偷偷换掉 staticLeft
-            staticLeft.innerHTML = charactersData[prevLeftIdx]
-                ? getCharHTML(charactersData[prevLeftIdx]) : '';
-
-            // 4. 翻页纸瞬间置于翻过去的状态，再动画翻回来
-            flipper.style.transition = 'none';
-            flipper.classList.add('is-flipped');
-
-            setTimeout(() => {
-                flipper.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)';
-                flipper.classList.remove('is-flipped');
-
-                setTimeout(() => {
-                    currentPage--;
-
-                    // 5. 动画结束：更新 staticRight，撤掉遮罩
-                    staticRight.innerHTML = charactersData[prevRightIdx]
-                        ? getCharHTML(charactersData[prevRightIdx]) : '';
-                    coverLeft.style.display = 'none';
-
-                    isLocked = false;
-                    updateTabs();
-                }, 800);
-            }, 50);
-        }
-
-        function jumpTo(pageIdx) {
-            if (isLocked || pageIdx === currentPage || pageIdx < 0 || pageIdx >= totalPages) return;
-            if (pageIdx > currentPage) {
-                next();
-                setTimeout(() => { if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx); }, 900);
-            } else {
-                prev();
-                setTimeout(() => { if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx); }, 900);
-            }
-        }
-
+        // 跳转到角色详情页
         function goToDetail(charId) {
             alert(`即将查看角色详情: ${charId}\n（详情页开发中...）`);
+            // window.location.href = `character-detail.html?id=${charId}`;
         }
 
-        function goBack() {
-            window.location.href = 'index.html';
-        }
+        // 初始化
+        initTabs();
+        renderContent(0);
 
-        window.onload = () => {
-            initTabs();
-            initPages();
-        };
     </script>
-    <script>
-// 白粉弥散粒子效果
-function createParticles() {
-    const container = document.getElementById('particles');
-    const particleCount = 30; // 粒子数量
-    
-    for (let i = 0; i < particleCount; i++) {
-        setTimeout(() => {
-            const particle = document.createElement('div');
-            particle.className = 'particle ' + (Math.random() > 0.5 ? 'pink' : 'white');
-            
-            // 随机大小 (3px - 15px)
-            const size = Math.random() * 12 + 3;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            
-            // 随机起始位置
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.bottom = '-20px';
-            
-            // 随机漂移距离
-            const drift = (Math.random() - 0.5) * 200;
-            particle.style.setProperty('--drift', drift + 'px');
-            
-            // 随机动画时长 (8s - 20s)
-            const duration = Math.random() * 12 + 8;
-            particle.style.animationDuration = duration + 's';
-            
-            // 随机延迟
-            const delay = Math.random() * 5;
-            particle.style.animationDelay = delay + 's';
-            
-            container.appendChild(particle);
-            
-            // 动画结束后移除并重新创建
-            setTimeout(() => {
-                particle.remove();
-                createSingleParticle();
-            }, (duration + delay) * 1000);
-        }, i * 200); // 错开创建时间
-    }
-}
-
-function createSingleParticle() {
-    const container = document.getElementById('particles');
-    const particle = document.createElement('div');
-    particle.className = 'particle ' + (Math.random() > 0.5 ? 'pink' : 'white');
-    
-    const size = Math.random() * 12 + 3;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.bottom = '-20px';
-    
-    const drift = (Math.random() - 0.5) * 200;
-    particle.style.setProperty('--drift', drift + 'px');
-    
-    const duration = Math.random() * 12 + 8;
-    particle.style.animationDuration = duration + 's';
-    
-    container.appendChild(particle);
-    
-    setTimeout(() => {
-        particle.remove();
-        createSingleParticle();
-    }, duration * 1000);
-}
-
-// 页面加载后启动粒子效果
-window.addEventListener('load', () => {
-    createParticles();
-});
-</script>
-
 </body>
 </html>
+
