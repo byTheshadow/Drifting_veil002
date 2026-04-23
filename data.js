@@ -33,7 +33,7 @@ const siteData = {
         coverImage: ""
     },
     
-    // 🎬 新增：电影字幕式更新日志
+    // 🎬 电影字幕式更新日志
     updates: {
         show: true,
         items: [
@@ -75,6 +75,23 @@ const siteData = {
         ]
     },
     
+    // 🖼️ 图片预览框
+    photoFrames: {
+        show: true,
+        frames: [
+            {
+                title: "📷 Memory",
+                image: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=400&h=500&fit=crop",
+                caption: "Sweet Moment ♡"
+            },
+            {
+                title: "🌸 Gallery",
+                image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=500&fit=crop",
+                caption: "Dreamy Vibes ✨"
+            }
+        ]
+    },
+    
     // 桌面图标
     desktopIcons: [
         {
@@ -110,3 +127,4 @@ const siteData = {
     
     fallingItemsCount: 15
 };
+
