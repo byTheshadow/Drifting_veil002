@@ -99,18 +99,47 @@
             flex-direction: column;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
             overflow: hidden;
+            z-index: 1;
         }
         
         .static-left { 
             left: 0; 
             border-radius: 12px 0 0 12px; 
-            border-right: 1px solid rgba(0,0,0,0.05); 
+            border-right: 1px solid rgba(0,0,0,0.05);
         }
         
         .static-right { 
             right: 0; 
             border-radius: 0 12px 12px 0; 
-            border-left: 1px solid rgba(0,0,0,0.05); 
+            border-left: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /*
+         * 遮罩层：z-index=15，夹在 static(1) 和 flipper(20) 之间。
+         * 翻页动画期间显示，结束后隐藏。
+         * 内容与被遮住的 static 页完全相同，视觉上无缝衔接。
+         */
+        .page-cover {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--book-white);
+            z-index: 15;
+            display: none;
+            padding: 50px 60px;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .page-cover.cover-right {
+            right: 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .page-cover.cover-left {
+            left: 0;
+            border-radius: 12px 0 0 12px;
         }
 
         .flipper {
@@ -388,47 +417,18 @@
         }
 
         @media (max-width: 1200px) {
-            .scene {
-                width: 90vw;
-                height: 70vh;
-            }
-            
-            .static-page, .flip-face {
-                padding: 30px 40px;
-            }
-            
-            .char-name {
-                font-size: 2.5rem;
-            }
-            
-            .tabs {
-                right: -45px;
-                gap: 10px;
-            }
+            .scene { width: 90vw; height: 70vh; }
+            .static-page, .flip-face, .page-cover { padding: 30px 40px; }
+            .char-name { font-size: 2.5rem; }
+            .tabs { right: -45px; gap: 10px; }
         }
 
         @media (max-width: 768px) {
-            .scene {
-                width: 95vw;
-                height: 60vh;
-            }
-            
-            .static-page, .flip-face {
-                padding: 20px 25px;
-            }
-            
-            .char-name {
-                font-size: 2rem;
-            }
-            
-            .content-split {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .tabs {
-                display: none;
-            }
+            .scene { width: 95vw; height: 60vh; }
+            .static-page, .flip-face, .page-cover { padding: 20px 25px; }
+            .char-name { font-size: 2rem; }
+            .content-split { flex-direction: column; gap: 20px; }
+            .tabs { display: none; }
         }
     </style>
 </head>
@@ -449,21 +449,27 @@
 
             <div class="tabs" id="tabs-container"></div>
 
-            <div class="static-page static-left" id="static-left"></div>
+            <!-- 底层静态页 z-index:1 -->
+            <div class="static-page static-left"  id="static-left"></div>
             <div class="static-page static-right" id="static-right"></div>
 
+            <!-- 遮罩层 z-index:15，动画期间遮住对应的 static 页 -->
+            <div class="page-cover cover-right" id="cover-right"></div>
+            <div class="page-cover cover-left"  id="cover-left"></div>
+
+            <!-- 翻页纸 z-index:20 -->
             <div class="flipper" id="flipper">
                 <div class="flip-face flip-front" id="flip-front"></div>
-                <div class="flip-face flip-back" id="flip-back"></div>
+                <div class="flip-face flip-back"  id="flip-back"></div>
             </div>
 
-            <div class="click-zone click-left" onclick="prev()"></div>
+            <div class="click-zone click-left"  onclick="prev()"></div>
             <div class="click-zone click-right" onclick="next()"></div>
         </div>
     </div>
 
     <script src="characters-data.js"></script>
-    
+
     <script>
         function getCharHTML(char) {
             return `
@@ -506,22 +512,26 @@
         }
 
         let currentPage = 0;
-        let isLocked = false;
-        const flipper = document.getElementById('flipper');
-        const staticLeft = document.getElementById('static-left');
+        let isLocked    = false;
+
+        const flipper     = document.getElementById('flipper');
+        const staticLeft  = document.getElementById('static-left');
         const staticRight = document.getElementById('static-right');
-        const flipFront = document.getElementById('flip-front');
-        const flipBack = document.getElementById('flip-back');
+        const flipFront   = document.getElementById('flip-front');
+        const flipBack    = document.getElementById('flip-back');
+        const coverRight  = document.getElementById('cover-right');
+        const coverLeft   = document.getElementById('cover-left');
+
         const totalPages = Math.ceil(charactersData.length / 2);
 
         function initTabs() {
-            const tabsContainer = document.getElementById('tabs-container');
+            const container = document.getElementById('tabs-container');
             for (let i = 0; i < totalPages; i++) {
                 const tab = document.createElement('div');
                 tab.className = 'tab' + (i === 0 ? ' active' : '');
                 tab.textContent = `PAGE ${i + 1}`;
                 tab.onclick = () => jumpTo(i);
-                tabsContainer.appendChild(tab);
+                container.appendChild(tab);
             }
         }
 
@@ -538,46 +548,58 @@
             }
         }
 
-        // 下一页
+        // ── 下一页（向左翻） ─────────────────────────────────────────────
+        //
+        //  动画前：
+        //    staticLeft  = 当前左页（不动）
+        //    coverRight  = 当前右页（盖住 staticRight，防止中途裸露）← 新增
+        //    flipFront   = 当前右页（与 coverRight 内容相同，形成无缝翻页）
+        //    flipBack    = 下一页左页
+        //    staticRight = 【趁遮罩挡住时】换成下一页右页
+        //
+        //  动画后（800ms）：
+        //    staticLeft  = 下一页左页
+        //    coverRight  隐藏
+        //    staticRight = 下一页右页（已在动画前换好，现在才显露）
+        //
         function next() {
             if (isLocked || currentPage >= totalPages - 1) return;
             isLocked = true;
 
-            const currentRightIdx = currentPage * 2 + 1;
-            const nextLeftIdx = (currentPage + 1) * 2;
+            const curRightIdx  = currentPage * 2 + 1;
+            const nextLeftIdx  = (currentPage + 1) * 2;
             const nextRightIdx = (currentPage + 1) * 2 + 1;
 
-            // 翻页纸正面 = 当前右页（视觉上盖住 staticRight，保持画面不变）
-            // 翻页纸背面 = 下一页左页（翻过去后露出）
-            if (charactersData[currentRightIdx]) {
-                flipFront.innerHTML = getCharHTML(charactersData[currentRightIdx]);
-            }
-            if (charactersData[nextLeftIdx]) {
-                flipBack.innerHTML = getCharHTML(charactersData[nextLeftIdx]);
-            }
+            // 1. 遮罩显示当前右页内容，遮住 staticRight
+            coverRight.innerHTML = charactersData[curRightIdx]
+                ? getCharHTML(charactersData[curRightIdx]) : '';
+            coverRight.style.display = 'flex';
 
-            // 开始翻页动画
+            // 2. 翻页纸：正面=当前右页，背面=下一页左页
+            flipFront.innerHTML = charactersData[curRightIdx]
+                ? getCharHTML(charactersData[curRightIdx]) : '';
+            flipBack.innerHTML  = charactersData[nextLeftIdx]
+                ? getCharHTML(charactersData[nextLeftIdx]) : '';
+
+            // 3. 趁遮罩挡住，偷偷换掉 staticRight
+            staticRight.innerHTML = charactersData[nextRightIdx]
+                ? getCharHTML(charactersData[nextRightIdx])
+                : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:1.5rem;">End ♡</div>';
+
+            // 4. 启动翻页动画
             flipper.classList.add('is-flipped');
 
             setTimeout(() => {
                 currentPage++;
 
-                // 翻页动画结束后，更新两侧静态页
-                // staticLeft 换成下一页左页
-                if (charactersData[nextLeftIdx]) {
-                    staticLeft.innerHTML = getCharHTML(charactersData[nextLeftIdx]);
-                }
-                // staticRight 换成下一页右页
-                if (charactersData[nextRightIdx]) {
-                    staticRight.innerHTML = getCharHTML(charactersData[nextRightIdx]);
-                } else {
-                    staticRight.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:1.5rem;">End ♡</div>';
-                }
+                // 5. 动画结束：更新 staticLeft，撤掉遮罩
+                staticLeft.innerHTML = charactersData[nextLeftIdx]
+                    ? getCharHTML(charactersData[nextLeftIdx]) : '';
+                coverRight.style.display = 'none';
 
-                // 瞬间重置翻页纸到初始位置（此时静态页已更新，flipper内容无所谓）
+                // 6. 瞬间复位翻页纸
                 flipper.style.transition = 'none';
                 flipper.classList.remove('is-flipped');
-
                 setTimeout(() => {
                     flipper.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)';
                     isLocked = false;
@@ -586,30 +608,44 @@
             }, 800);
         }
 
-        // 上一页
+        // ── 上一页（向右翻） ─────────────────────────────────────────────
+        //
+        //  动画前：
+        //    staticRight = 当前右页（不动）
+        //    coverLeft   = 当前左页（盖住 staticLeft，防止中途裸露）← 新增
+        //    flipBack    = 当前左页（与 coverLeft 内容相同）
+        //    flipFront   = 上一页右页
+        //    staticLeft  = 【趁遮罩挡住时】换成上一页左页
+        //
+        //  动画后（800ms）：
+        //    staticRight = 上一页右页
+        //    coverLeft   隐藏
+        //    staticLeft  = 上一页左页（已在动画前换好，现在才显露）
+        //
         function prev() {
             if (isLocked || currentPage <= 0) return;
             isLocked = true;
 
-            const currentLeftIdx = currentPage * 2;
-            const prevLeftIdx = (currentPage - 1) * 2;
+            const curLeftIdx   = currentPage * 2;
+            const prevLeftIdx  = (currentPage - 1) * 2;
             const prevRightIdx = (currentPage - 1) * 2 + 1;
 
-            // 翻页纸背面 = 当前左页（从左往右翻回来时露出的内容）
-            // 翻页纸正面 = 上一页右页
-            if (charactersData[currentLeftIdx]) {
-                flipBack.innerHTML = getCharHTML(charactersData[currentLeftIdx]);
-            }
-            if (charactersData[prevRightIdx]) {
-                flipFront.innerHTML = getCharHTML(charactersData[prevRightIdx]);
-            }
+            // 1. 遮罩显示当前左页内容，遮住 staticLeft
+            coverLeft.innerHTML = charactersData[curLeftIdx]
+                ? getCharHTML(charactersData[curLeftIdx]) : '';
+            coverLeft.style.display = 'flex';
 
-            // staticLeft 立刻换成上一页左页（翻页纸从左侧翻回来，会盖住左侧，所以可以安全地立刻换）
-            if (charactersData[prevLeftIdx]) {
-                staticLeft.innerHTML = getCharHTML(charactersData[prevLeftIdx]);
-            }
+            // 2. 翻页纸：正面=上一页右页，背面=当前左页
+            flipFront.innerHTML = charactersData[prevRightIdx]
+                ? getCharHTML(charactersData[prevRightIdx]) : '';
+            flipBack.innerHTML  = charactersData[curLeftIdx]
+                ? getCharHTML(charactersData[curLeftIdx]) : '';
 
-            // 先把翻页纸瞬间放到翻过去的状态（is-flipped），再动画翻回来
+            // 3. 趁遮罩挡住，偷偷换掉 staticLeft
+            staticLeft.innerHTML = charactersData[prevLeftIdx]
+                ? getCharHTML(charactersData[prevLeftIdx]) : '';
+
+            // 4. 翻页纸瞬间置于翻过去的状态，再动画翻回来
             flipper.style.transition = 'none';
             flipper.classList.add('is-flipped');
 
@@ -619,36 +655,31 @@
 
                 setTimeout(() => {
                     currentPage--;
-                    // 翻回来后，staticRight 换成上一页右页
-                    if (charactersData[prevRightIdx]) {
-                        staticRight.innerHTML = getCharHTML(charactersData[prevRightIdx]);
-                    }
+
+                    // 5. 动画结束：更新 staticRight，撤掉遮罩
+                    staticRight.innerHTML = charactersData[prevRightIdx]
+                        ? getCharHTML(charactersData[prevRightIdx]) : '';
+                    coverLeft.style.display = 'none';
+
                     isLocked = false;
                     updateTabs();
                 }, 800);
             }, 50);
         }
 
-        // 跳转到指定页
         function jumpTo(pageIdx) {
             if (isLocked || pageIdx === currentPage || pageIdx < 0 || pageIdx >= totalPages) return;
-            
             if (pageIdx > currentPage) {
                 next();
-                setTimeout(() => {
-                    if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx);
-                }, 900);
+                setTimeout(() => { if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx); }, 900);
             } else {
                 prev();
-                setTimeout(() => {
-                    if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx);
-                }, 900);
+                setTimeout(() => { if (currentPage !== pageIdx && !isLocked) jumpTo(pageIdx); }, 900);
             }
         }
 
         function goToDetail(charId) {
             alert(`即将查看角色详情: ${charId}\n（详情页开发中...）`);
-            // window.location.href = `character-detail.html?id=${charId}`;
         }
 
         function goBack() {
