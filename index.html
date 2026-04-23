@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreamy Portfolio OS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playball&display=swap" rel="stylesheet">
+    
+    <!-- 字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playball&family=Pacifico&family=Dancing+Script:wght@400;700&family=Satisfy&display=swap" rel="stylesheet">
+    
+    <!-- 中文可爱字体 -->
+    <style>
+        @import url("https://fontsapi.zeoseven.com/850/main/result.css");
+        @import url("https://fontsapi.zeoseven.com/802/main/result.css");
+        @import url("https://fontsapi.zeoseven.com/282/main/result.css");
+    </style>
+    
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
     
     <style>
@@ -17,6 +27,9 @@
             --color-text-gray: #777777;
             --font-ui: 'Nunito', sans-serif;
             --font-title: 'Playball', cursive;
+            --font-cute-cn: 'KeinannMaruPOP', sans-serif;
+            --font-handwrite: 'YShi-Written', cursive;
+            --font-elegant: 'Dancing Script', cursive;
         }
 
         * {
@@ -201,6 +214,103 @@
         .music-info p { font-size: 0.8rem; color: var(--color-text-gray);}
         .music-controls { margin-top: 15px; display: flex; justify-content: center; gap: 20px; font-weight: bold; color: var(--color-text-dark); font-size: 1.2rem;}
 
+        /* ================= 🎬 电影字幕式更新日志窗口 ================= */
+        #updates-window {
+            bottom: 100px;
+            left: 100px;
+            width: 350px;
+            height: 450px;
+            overflow: hidden;
+        }
+
+        .credits-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .credits-scroll {
+            width: 100%;
+            animation: scrollUp 30s linear infinite;
+            font-family: var(--font-cute-cn);
+        }
+
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(100%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        .credit-item {
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0.95;
+        }
+
+        .credit-date {
+            font-size: 0.75rem;
+            color: var(--color-accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-family: var(--font-ui);
+        }
+
+        .credit-title {
+            font-size: 1.3rem;
+            color: var(--color-text-dark);
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .credit-desc {
+            font-size: 0.9rem;
+            color: var(--color-text-gray);
+            line-height: 1.6;
+            font-family: var(--font-handwrite);
+        }
+
+        .credit-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+            margin: 30px auto;
+            opacity: 0.5;
+        }
+
+        /* 渐变遮罩效果 */
+        .credits-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .credits-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
         #desktop-icons {
             position: absolute; right: 60px; top: 150px;
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -302,6 +412,20 @@
             </div>
         </div>
 
+        <!-- 🎬 新增：电影字幕式更新日志窗口 -->
+        <div id="updates-window" class="glass window-popup">
+            <div class="window-header" id="updates-header">
+                <span>✨ Updates & News</span>
+            </div>
+            <div class="window-content" style="padding: 0; height: calc(100% - 35px);">
+                <div class="credits-container">
+                    <div class="credits-scroll" id="creditsScroll">
+                        <!-- 内容将由 JavaScript 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="desktop-icons"></div>
     </div>
 
@@ -342,6 +466,13 @@
                 document.getElementById('music-window').style.display = 'none';
             }
 
+            // 🎬 初始化更新日志
+            if (siteData.updates && siteData.updates.show) {
+                initUpdates();
+            } else {
+                document.getElementById('updates-window').style.display = 'none';
+            }
+
             const iconsContainer = document.getElementById('desktop-icons');
             siteData.desktopIcons.forEach(icon => {
                 const iconEl = document.createElement('div');
@@ -355,6 +486,30 @@
                 `;
                 iconsContainer.appendChild(iconEl);
             });
+        }
+
+        // 🎬 初始化电影字幕式更新日志
+        function initUpdates() {
+            const scrollContainer = document.getElementById('creditsScroll');
+            let html = '';
+            
+            // 生成两遍内容以实现无缝循环
+            for (let repeat = 0; repeat < 2; repeat++) {
+                siteData.updates.items.forEach((item, index) => {
+                    html += `
+                        <div class="credit-item">
+                            <div class="credit-date">${item.date}</div>
+                            <div class="credit-title">${item.title}</div>
+                            <div class="credit-desc">${item.description}</div>
+                        </div>
+                    `;
+                    if (index < siteData.updates.items.length - 1 || repeat === 0) {
+                        html += '<div class="credit-divider"></div>';
+                    }
+                });
+            }
+            
+            scrollContainer.innerHTML = html;
         }
 
         function handleIconClick(action) {
@@ -465,7 +620,7 @@
         const zoomLayer = document.getElementById('zoom-layer');
         window.addEventListener('wheel', (e) => {
             if (e.deltaY < 0) zoomLevel += 0.05;
-            else zoomLevel -= 0.05;
+                        else zoomLevel -= 0.05;
             zoomLevel = Math.min(Math.max(1, zoomLevel), 1.3);
             zoomLayer.style.transform = `scale(${zoomLevel})`;
         });
@@ -583,6 +738,7 @@
             initSlideUnlock();
             makeDraggable(document.getElementById("portfolio-window"), "portfolio-header");
             makeDraggable(document.getElementById("music-window"), "music-header");
+            makeDraggable(document.getElementById("updates-window"), "updates-header");
         };
     </script>
 </body>
