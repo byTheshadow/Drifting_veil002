@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreamy Portfolio OS</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playball&display=swap" rel="stylesheet">
-    <!-- 使用 jsDelivr CDN 替代 Cloudflare -->
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
     
     <style>
@@ -110,17 +109,30 @@
             opacity: 0; transition: opacity 1s; overflow: hidden;
         }
 
+        /* 底层：弥散渐变背景 */
         #background-layer {
             position: absolute; width: 100%; height: 100%;
             top: 0; left: 0;
             background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #FAD8DF 100%);
+            z-index: 0;
+        }
+
+        /* 上层：装饰图片层 */
+        #decoration-layer {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0;
+            background-image: url('https://tc-new.z.wiki/autoupload/1N2_UJVYUo2KjM-_22IFnCfNcKcqEnRmcljopnyJoMs/20260423/UCdm/1200X675/793f00ee442c74adba71d9bafef8de4d.jpg/webp');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.6;
+            z-index: 1;
         }
 
         #zoom-layer {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
             transition: transform 0.15s ease-out; transform-origin: center;
+            z-index: 2;
         }
 
         .star-dec {
@@ -236,8 +248,13 @@
     </div>
 
     <div id="desktop">
+        <!-- 底层：弥散渐变 -->
         <div id="background-layer"></div>
         
+        <!-- 上层：装饰图片 -->
+        <div id="decoration-layer"></div>
+        
+        <!-- 滚动缩放层 -->
         <div id="zoom-layer">
             <svg class="star-dec star-1" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
             <svg class="star-dec star-2" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
@@ -291,16 +308,21 @@
     <script src="data.js"></script>
     
     <script>
-        // 检查 Matter.js 是否加载成功
         if (typeof Matter === 'undefined') {
             console.error('Matter.js 加载失败，物理效果将不可用');
         }
 
         function initData() {
             const bgLayer = document.getElementById('background-layer');
+            const decoLayer = document.getElementById('decoration-layer');
+            
+            // 设置底层渐变背景
             if (siteData.background.useCustomImage && siteData.background.customImageUrl) {
-                bgLayer.style.backgroundImage = `url(${siteData.background.customImageUrl})`;
+                // 如果用户设置了自定义背景，替换装饰层
+                decoLayer.style.backgroundImage = `url(${siteData.background.customImageUrl})`;
+                decoLayer.style.opacity = '0.7';
             } else {
+                // 使用默认配置
                 bgLayer.style.background = `radial-gradient(circle at 50% 50%, ${siteData.background.gradientColors.center} 0%, ${siteData.background.gradientColors.edge} 100%)`;
             }
 
@@ -508,7 +530,7 @@
             
             itemUrls.forEach((url, index) => {
                 setTimeout(() => {
-                                        const xPos = Math.random() * (width - 300) + 150;
+                    const xPos = Math.random() * (width - 300) + 150;
                     const scale = 0.07 + (Math.random() * 0.03); 
                     const body = Bodies.circle(xPos, -50, 45, {
                         restitution: 0.9,
