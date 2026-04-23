@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Detail - White Minimal Zine</title>
+    
+    <!-- 字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,900;1,900&family=Satisfy&family=Nunito:wght@400;700;900&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 中文可爱字体 -->
+    <style>
+        @import url("https://fontsapi.zeoseven.com/850/main/result.css");
+        @import url("https://fontsapi.zeoseven.com/802/main/result.css");
+    </style>
+    
+    <style>
+        :root {
+            --color-pure-white: #FFFFFF;
+            --color-off-white: #FFF9F5;
+            --color-soft-pink: #FAD8DF;
+            --color-coral: #F29D80;
+            --color-cream: #FFF3E8;
+            --color-black: #222222;
+            
+            --font-bold: 'Bebas Neue', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+            --font-hand: 'Satisfy', cursive;
+            --font-handwrite: 'Dancing Script', cursive;
+            --font-ui: 'Nunito', sans-serif;
+            --font-cute-cn: 'KeinannMaruPOP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--color-pure-white);
+            background-image: radial-gradient(circle at 80% 20%, #fff0f3 0%, transparent 40%);
+            font-family: var(--font-ui);
+            color: var(--color-black);
+            min-height: 100vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* ================= 杂志容器：极致留白 ================= */
+        .zine-container {
+            width: 90vw; 
+            max-width: 1200px; 
+            height: 90vh;
+            display: flex; 
+            gap: 40px; 
+            position: relative;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 左侧：垂直图像与标题区 */
+        .visual-area {
+            flex: 1.1; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: flex-start;
+        }
+
+        /* 图片容器：无遮挡 */
+        .image-frame {
+            width: 100%; 
+            height: 65%;
+            background: var(--color-off-white);
+            padding: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            position: relative; 
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+        
+        .image-frame:hover { 
+            transform: translateY(-10px); 
+        }
+        
+        .image-frame img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 标题放在图片正下方 */
+        .title-base {
+            margin-top: 25px;
+            font-family: var(--font-bold);
+            font-size: 8.5rem; 
+            line-height: 0.8;
+            color: var(--color-black);
+            letter-spacing: -3px;
+        }
+
+        .title-sub {
+            font-family: var(--font-cute-cn);
+            font-size: 2rem;
+            color: var(--color-coral);
+            margin-top: 10px;
+        }
+
+        /* ================= 右侧：轻盈排版区 ================= */
+        .content-area {
+            flex: 1; 
+            padding: 40px 0;
+            display: flex; 
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        /* 优雅的装饰线 */
+        .divider { 
+            width: 100px; 
+            height: 4px; 
+            background: var(--color-coral); 
+            margin-bottom: 30px; 
+        }
+
+        .sub-heading {
+            font-family: var(--font-serif); 
+            font-size: 3.5rem; 
+            font-style: italic;
+            color: var(--color-coral); 
+            margin-bottom: 20px;
+        }
+
+        /* 文字内容：更白的半透明卡片 */
+        .paper-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 30px; 
+            border-left: 1px solid var(--color-soft-pink);
+            margin-bottom: 40px;
+        }
+
+        .quote {
+            font-family: var(--font-handwrite); 
+            font-size: 1.8rem;
+            line-height: 1.5; 
+            color: #555;
+        }
+
+        /* 标签容器 */
+        .tags-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            background: var(--color-soft-pink);
+            color: var(--color-coral);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: var(--font-cute-cn);
+        }
+
+        /* 详细参数网格 */
+        .stats-list {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 25px;
+        }
+        
+        .stat-box h5 { 
+            font-size: 0.75rem; 
+            letter-spacing: 3px; 
+            color: #bbb; 
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
+        }
+        
+        .stat-box p { 
+            font-weight: 800; 
+            font-size: 1.1rem; 
+            color: var(--color-black); 
+        }
+
+        /* ================= 装饰元素 ================= */
+        .decor-star {
+            position: absolute; 
+            top: 10%; 
+            right: 0;
+            width: 100px; 
+            height: 100px; 
+            background: var(--color-soft-pink);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: floating 6s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        .small-cross {
+            position: absolute; 
+            bottom: 50px; 
+            left: 0;
+            font-size: 1.5rem; 
+            color: var(--color-coral); 
+            opacity: 0.5;
+        }
+
+        /* 页码与边缘标注 */
+        .side-label {
+            position: absolute; 
+            right: -50px; 
+            bottom: 100px;
+            transform: rotate(-90deg); 
+            font-size: 0.7rem; 
+            font-weight: 900;
+            letter-spacing: 4px; 
+            color: #ccc;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(20deg); }
+        }
+
+        /* 鼠标跟随的小光点 */
+        #cursor-glow {
+            position: fixed; 
+            width: 300px; 
+            height: 300px;
+            background: radial-gradient(circle, rgba(242, 157, 128, 0.1) 0%, transparent 70%);
+            pointer-events: none; 
+            transform: translate(-50%, -50%); 
+            z-index: 100;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .zine-container {
+                flex-direction: column;
+                height: auto;
+                gap: 30px;
+            }
+
+            .visual-area {
+                width: 100%;
+            }
+
+            .image-frame {
+                height: 400px;
+            }
+
+            .title-base {
+                font-size: 5rem;
+            }
+
+            .sub-heading {
+                font-size: 2.5rem;
+            }
+
+            .content-area {
+                padding: 20px 0;
+            }
+
+            .side-label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title-base {
+                font-size: 4rem;
+            }
+
+            .sub-heading {
+                font-size: 2rem;
+            }
+
+            .quote {
+                font-size: 1.4rem;
+            }
+
+            .stats-list {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .paper-card {
+                padding: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 鼠标跟随光晕 -->
+    <div id="cursor-glow"></div>
+
+    <div class="zine-container">
+        
+        <!-- 左侧：核心视觉区 (照片+大标题) -->
+        <div class="visual-area">
+            <div class="image-frame">
+                <img id="charImage" src="" alt="Character">
+            </div>
+            <h1 class="title-base" id="charNameEn">LOADING...</h1>
+            <div class="title-sub" id="charName">加载中...</div>
+        </div>
+
+        <!-- 右侧：详细内容区 -->
+        <div class="content-area">
+            <div class="divider"></div>
+            <h2 class="sub-heading" id="charTitle">The Character</h2>
+            
+            <!-- 标签 -->
+            <div class="tags-container" id="tagsContainer"></div>
+            
+            <div class="paper-card">
+                <p class="quote" id="charJournal">
+                    "Loading character information..."
+                </p>
+            </div>
+
+            <div class="stats-list" id="statsContainer">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 装饰 -->
+        <div class="decor-star"></div>
+        <div class="small-cross">✦ ✦ ✦</div>
+        <div class="side-label">CHARACTER ARCHIVE / SWEET COLLECTION</div>
+
+    </div>
+
+    <!-- 引入数据 -->
+    <script src="characters-data.js"></script>
+    
+    <!-- 全局导航组件 -->
+    <script src="nav-component.js"></script>
+
+    <script>
+        // 鼠标跟随光晕效果
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // 从URL获取角色ID
+        function getCharacterId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // 加载角色数据
+        function loadCharacterData() {
+            const charId = getCharacterId();
+            
+            if (!charId) {
+                alert('未找到角色信息');
+                window.location.href = 'characters.html';
+                return;
+            }
+
+            // 从 characters-data.js 中查找角色
+            const character = charactersData.find(char => char.id === charId);
+
+            if (!character) {
+                alert('角色不存在');
+                window.location.href = 'characters.html';
+                return;
+            }
+
+            // 填充数据
+            document.getElementById('charImage').src = character.avatar;
+            document.getElementById('charNameEn').textContent = character.nameEn.toUpperCase();
+            document.getElementById('charName').textContent = character.name;
+            document.getElementById('charTitle').textContent = character.preview || 'The Character';
+            document.getElementById('charJournal').textContent = character.journal;
+
+            // 填充标签
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            character.tags.forEach(tag => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.textContent = tag;
+                tagsContainer.appendChild(tagEl);
+            });
+
+            // 填充统计信息
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <h5>GROUP</h5>
+                    <p>${character.group}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>NUMBER</h5>
+                    <p>NO.${character.no}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>DATE</h5>
+                    <p>${character.date}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>TASKS</h5>
+                    <p>${character.tasks.filter(t => t.checked).length}/${character.tasks.length} Done</p>
+                </div>
+            `;
+
+            // 更新页面标题
+            document.title = `${character.name} - Character Detail`;
+        }
+
+        // 页面加载时执行
+        window.onload = () => {
+            loadCharacterData();
+        };
+    </script>
+</body>
+</html>
