@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Aesthetic PC</title>
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Outline&family=Satisfy&family=Nunito:wght@400;700;900&family=Homemade+Apple&display=swap" rel="stylesheet">
+    
+    <!-- 中文可爱字体 -->
+    <style>
+        @import url("https://fontsapi.zeoseven.com/850/main/result.css");
+        @import url("https://fontsapi.zeoseven.com/802/main/result.css");
+    </style>
+    
+    <style>
+        :root {
+            --color-bg: #FAD8DF; 
+            --color-white: #FFFFFF;
+            --color-accent: #F29D80;
+            --color-black: #1a1a1a;
+            --color-cream: #FFF3E8;
+            --font-hollow: 'Londrina Outline', cursive;
+            --font-hand: 'Satisfy', cursive;
+            --font-note: 'Homemade Apple', cursive;
+            --font-ui: 'Nunito', sans-serif;
+            --font-cute-cn: 'KeinannMaruPOP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #e8dcd8;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 80%);
+            font-family: var(--font-ui);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh; 
+            overflow: hidden;
+            perspective: 1500px;
+        }
+
+        /* ================= 1. 实体显示器外框 ================= */
+        .monitor-hardware {
+            width: 92vw; 
+            max-width: 1200px;
+            height: 85vh; 
+            max-height: 800px;
+            background: #fdfdfd;
+            border-radius: 40px;
+            padding: 25px 25px 40px 25px;
+            box-shadow: 
+                0 50px 100px rgba(0,0,0,0.3), 
+                inset 0 4px 10px rgba(255,255,255,1),
+                inset 0 -5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            transform: translateY(10px) rotateX(1deg);
+            transition: transform 0.5s ease;
+        }
+
+        .monitor-hardware:hover {
+            transform: translateY(5px) rotateX(0.5deg);
+        }
+
+        /* 摄像头区域 */
+        .webcam-area {
+            position: absolute; 
+            top: 10px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .mic-hole { 
+            width: 4px; 
+            height: 4px; 
+            background: #ddd; 
+            border-radius: 50%; 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2); 
+        }
+        
+        .camera-lens { 
+            width: 12px; 
+            height: 12px; 
+            background: #111; 
+            border-radius: 50%; 
+            position: relative; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.8); 
+        }
+        
+        .camera-lens::after { 
+            content:''; 
+            position:absolute; 
+            top:2px; 
+            right:2px; 
+            width:3px; 
+            height:3px; 
+            background:rgba(255,255,255,0.6); 
+            border-radius:50%; 
+        }
+
+        /* 实体硬件贴纸 */
+        .hw-sticker { 
+            position: absolute; 
+            z-index: 200; 
+            filter: drop-shadow(2px 3px 5px rgba(0,0,0,0.2)); 
+            pointer-events: none;
+        }
+        
+        .st-1 { 
+            bottom: 20px; 
+            right: 40px; 
+            width: 70px; 
+            transform: rotate(-10deg); 
+        }
+        
+        .st-2 { 
+            top: -20px; 
+            left: 50px; 
+            width: 90px; 
+            transform: rotate(15deg); 
+        }
+
+        /* ================= 2. 屏幕内部系统 ================= */
+        .screen-display {
+            width: 100%; 
+            height: 100%;
+            background: var(--color-bg);
+            border-radius: 20px;
+            border: 8px solid #222;
+            position: relative;
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column;
+            background-image: radial-gradient(circle at 50% 50%, var(--color-cream) 0%, var(--color-bg) 100%);
+            box-shadow: 
+                inset 0 0 50px rgba(242, 157, 128, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 屏幕玻璃反光效果 */
+        .screen-glare {
+            position: absolute; 
+            top: -50%; 
+            left: -50%; 
+            width: 200%; 
+            height: 200%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%);
+            transform: rotate(30deg); 
+            pointer-events: none; 
+            z-index: 99;
+        }
+
+        /* 系统顶部菜单栏 */
+        .os-menubar {
+            height: 30px; 
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px); 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            padding: 0 20px; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            z-index: 100;
+            color: var(--color-black);
+        }
+
+        /* ================= 3. 画廊应用窗口 ================= */
+        .gallery-app {
+            flex: 1; 
+            display: flex;
+            margin: 15px; 
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(20px); 
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.8);
+            overflow: hidden; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            animation: window-open 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes window-open {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 左侧边栏导航 */
+        .sidebar {
+            width: 220px; 
+            background: rgba(255,255,255,0.3);
+            border-right: 1px solid rgba(255,255,255,0.5);
+            padding: 30px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
+        }
+        
+        .sidebar-title { 
+            font-family: var(--font-hollow); 
+            font-size: 2.2rem; 
+            margin-bottom: 20px; 
+            color: var(--color-black); 
+        }
+        
+        .nav-item {
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            cursor: pointer;
+            font-weight: 800; 
+            color: #666; 
+            transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: var(--color-white); 
+            color: var(--color-accent);
+            transform: translateX(5px); 
+            box-shadow: 5px 5px 15px rgba(242, 157, 128, 0.1);
+        }
+        
+        .nav-item::before { 
+            content: '♡'; 
+            font-size: 0.8rem; 
+        }
+
+        .sidebar-footer {
+            margin-top: auto; 
+            font-family: var(--font-hand); 
+            color: var(--color-accent); 
+            font-size: 1.2rem; 
+            text-align: center;
+        }
+
+        /* 右侧主画廊区 */
+        .gallery-content {
+            flex: 1; 
+            padding: 40px; 
+            overflow-y: auto;
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 40px; 
+            align-content: start;
+        }
+
+        .gallery-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .gallery-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .gallery-content::-webkit-scrollbar-thumb {
+            background: var(--color-accent);
+            border-radius: 10px;
+        }
+
+        /* ================= 4. 拍立得照片组件 ================= */
+        .polaroid {
+            background: white; 
+            padding: 12px 12px 45px 12px;
+            box-shadow: 3px 10px 20px rgba(0,0,0,0.08);
+            position: relative; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        
+        /* 随机旋转效果 */
+        .polaroid:nth-child(odd) { transform: rotate(-2deg); }
+        .polaroid:nth-child(even) { transform: rotate(3deg); }
+        .polaroid:nth-child(3n) { transform: rotate(1deg); }
+
+        .polaroid img { 
+            width: 100%; 
+            aspect-ratio: 1/1; 
+            object-fit: cover; 
+            background: #eee; 
+            display: block;
+        }
+
+        /* 拍立得下方的手写标注 */
+        .polaroid-caption {
+            position: absolute; 
+            bottom: 12px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            font-family: var(--font-note); 
+            font-size: 0.85rem; 
+            color: #777;
+            width: 90%; 
+            text-align: center; 
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 悬停效果：放大、变正、出现爱心 */
+        .polaroid:hover {
+            transform: scale(1.1) rotate(0deg) translateY(-10px);
+            z-index: 10; 
+            box-shadow: 0 20px 40px rgba(242, 157, 128, 0.2);
+        }
+        
+        .polaroid:hover::after {
+            content: '❤'; 
+            position: absolute; 
+            top: 10px; 
+            right: 10px;
+            color: var(--color-accent); 
+            font-size: 1.5rem; 
+            animation: heart-pop 0.4s forwards;
+        }
+
+        @keyframes heart-pop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 装饰用的胶带 */
+        .tape-deco {
+            position: absolute; 
+            top: -15px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 80px; 
+            height: 25px; 
+            background: rgba(255, 243, 232, 0.5);
+            backdrop-filter: blur(2px); 
+            border: 1px solid rgba(255,255,255,0.3);
+            z-index: 2;
+        }
+
+        /* ================= 5. 图片详情弹窗 ================= */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-caption {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-family: var(--font-hand);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: white;
+            color: var(--color-black);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .lightbox-close:hover {
+            background: var(--color-accent);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .monitor-hardware {
+                width: 95vw;
+                height: 90vh;
+            }
+
+            .sidebar {
+                width: 180px;
+                padding: 20px 15px;
+            }
+
+            .sidebar-title {
+                font-size: 1.8rem;
+            }
+
+            .gallery-content {
+                padding: 30px;
+                gap: 30px;
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.5);
+                padding: 20px;
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 15px;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            .nav-item {
+                white-space: nowrap;
+            }
+
+            .gallery-content {
+                padding: 20px;
+                gap: 25px;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 实体显示器 -->
+    <div class="monitor-hardware">
+        <!-- 摄像头与麦克风 -->
+        <div class="webcam-area">
+            <div class="mic-hole"></div>
+            <div class="camera-lens"></div>
+            <div class="mic-hole"></div>
+        </div>
+        
+        <!-- 外壳上的贴纸 -->
+        <img class="hw-sticker st-1" src="https://tc-new.z.wiki/autoupload/1N2_UJVYUo2KjM-_22IFnCfNcKcqEnRmcljopnyJoMs/20260423/PhPh/2048X2048/2026-04-23_123511.png/webp" alt="Sticker">
+        <img class="hw-sticker st-2" src="https://tc-new.z.wiki/autoupload/1N2_UJVYUo2KjM-_22IFnCfNcKcqEnRmcljopnyJoMs/20260423/atIF/1602X1594/2026-04-23_135445.png/webp" alt="Sticker">
+
+        <!-- 屏幕显示区域 -->
+        <div class="screen-display">
+            <!-- 屏幕玻璃反光层 -->
+            <div class="screen-glare"></div>
+
+            <!-- 顶部系统栏 -->
+            <div class="os-menubar">
+                <div style="display:flex; gap:15px">
+                    <span>♡ AestheticOS</span>
+                    <span>File</span>
+                    <span>Gallery</span>
+                    <span>Tools</span>
+                </div>
+                <div>ART_EXPLORER_V1.0</div>
+                <div style="color:var(--color-accent)" id="battery-status">100% BATTERY ♡</div>
+            </div>
+
+            <!-- 画廊应用 -->
+            <div class="gallery-app">
+                <!-- 侧边栏 -->
+                <div class="sidebar">
+                    <h2 class="sidebar-title">GALLERY</h2>
+                    <div class="nav-item active" data-category="all">All Works</div>
+                    <div class="nav-item" data-category="illustrations">Illustrations</div>
+                    <div class="nav-item" data-category="sketches">Sketches</div>
+                    <div class="nav-item" data-category="characters">Character Design</div>
+                    <div class="nav-item" data-category="pixel">Pixel Art</div>
+                    
+                    <div class="sidebar-footer">
+                        Enjoy the view!
+                    </div>
+                </div>
+
+                <!-- 照片流 -->
+                <div class="gallery-content" id="gallery-content">
+                    <!-- JS 动态渲染 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片详情弹窗 -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-close" onclick="closeLightbox()">×</div>
+            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <script src="gallery-data.js"></script>
+    
+    <script>
+        const galleryContent = document.getElementById('gallery-content');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        let currentCategory = 'all';
+
+        // 渲染画廊
+        function renderGallery(category = 'all') {
+            const filteredImages = category === 'all' 
+                ? galleryData 
+                : galleryData.filter(img => img.category === category);
+
+            galleryContent.innerHTML = filteredImages.map((img, index) => {
+                const tapeStyles = [
+                    '',
+                    'background:rgba(242, 157, 128, 0.3)',
+                    'background:rgba(250, 216, 223, 0.6)',
+                    'transform:rotate(45deg); left:inherit; right:-20px; top:-10px; width:60px;'
+                ];
+                const tapeStyle = tapeStyles[index % tapeStyles.length];
+
+                return `
+                    <div class="polaroid" onclick="openLightbox('${img.image}', '${img.title}')">
+                        <div class="tape-deco" style="${tapeStyle}"></div>
+                        <img src="${img.image}" alt="${img.title}" loading="lazy">
+                        <div class="polaroid-caption">${img.title}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 分类切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.getAttribute('data-category');
+                currentCategory = category;
+                renderGallery(category);
+            });
+        });
+
+        // 打开灯箱
+        function openLightbox(imageSrc, caption) {
+            lightboxImg.src = imageSrc;
+            lightboxCaption.textContent = caption;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭灯箱
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // 点击背景关闭
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // ESC键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // 初始化
+        window.onload = () => {
+            renderGallery();
+        };
+    </script>
+
+    <!-- 全局导航组件 -->
+    <script src="nav-component.js"></script>
+
+</body>
+</html>
