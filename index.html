@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreamy Portfolio OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playball&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
+    <style>
+        :root {
+            --color-bg: #FAD8DF;
+            --color-bg-light: #FFF3E8;
+            --color-white: #FFFFFF;
+            --color-accent: #F29D80;
+            --color-text-dark: #333333;
+            --color-text-gray: #777777;
+            --font-ui: 'Nunito', sans-serif;
+            --font-title: 'Playball', cursive;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box; user-select: none;
+        }
+
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: var(--font-ui);
+        }
+
+        /* ================= Apple 风格滑动解锁开屏 ================= */
+        #boot-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FAD8DF 100%);
+            z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease-out;
+        }
+
+        .lock-container {
+            position: relative;
+            width: 350px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px rgba(242, 157, 128, 0.2);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .slide-track {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .slide-button {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #F29D80, #FAD8DF);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(242, 157, 128, 0.4);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px;
+            color: white;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.1s;
+        }
+
+        .slide-text {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--color-accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .boot-subtitle {
+            margin-top: 30px;
+            color: var(--color-text-gray);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        /* 滑动进度背景 */
+        .slide-progress {
+            position: absolute;
+            left: 0; top: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, rgba(242, 157, 128, 0.2), rgba(250, 216, 223, 0.3));
+            border-radius: 35px;
+            transition: width 0.1s;
+        }
+
+        /* ================= 桌面背景 ================= */
+        #desktop {
+            position: relative; width: 100vw; height: 100vh;
+            opacity: 0; transition: opacity 1s; overflow: hidden;
+        }
+
+        /* 背景层（支持自定义图片） */
+        #background-layer {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0;
+            background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #FAD8DF 100%);
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* 滚动缩放层 */
+        #zoom-layer {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            transition: transform 0.15s ease-out; transform-origin: center;
+        }
+
+        /* 黑色星星装饰 */
+        .star-dec {
+            position: absolute; width: 120px; height: 120px;
+            pointer-events: none; opacity: 0.85; z-index: 0;
+        }
+        .star-1 { top: 20px; left: 20px; transform: rotate(-15deg); width: 180px; height: 180px; }
+        .star-2 { top: 200px; left: -20px; width: 100px; height: 100px; }
+        .star-3 { bottom: 50px; right: 50px; transform: rotate(20deg); width: 250px; height: 250px; }
+        .star-4 { bottom: -20px; right: 250px; width: 120px; height: 120px; }
+        .star-5 { top: 50%; right: -50px; width: 150px; height: 150px; transform: translateY(-50%); }
+
+        /* ================= 玻璃拟态组件 ================= */
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 40px rgba(242, 157, 128, 0.15);
+            border-radius: 18px;
+            position: absolute; z-index: 10;
+        }
+
+        /* ================= 翻页时钟 ================= */
+        #clock-widget { top: 80px; left: 100px; padding: 25px; display: flex; flex-direction: column; align-items: center; }
+        .clock-date { font-size: 1.2rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 15px; }
+        .flip-group { display: flex; gap: 15px; }
+        .flip-card {
+            background: var(--color-white);
+            color: #d17887;
+            font-size: 5rem; font-weight: 800;
+            padding: 15px 20px; border-radius: 14px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05), inset 0 -2px 5px rgba(0,0,0,0.02);
+            min-width: 100px; text-align: center; line-height: 1;
+            border: 1px solid rgba(255,255,255,1);
+        }
+        .flip-card::after {
+            content: ''; position: absolute; top: 50%; left: 0;
+            width: 100%; height: 2px;
+            background: rgba(0,0,0,0.05);
+            box-shadow: 0 1px 0 rgba(255,255,255,1);
+        }
+
+        /* ================= 弹窗 ================= */
+        .window-popup {
+            min-width: 300px; padding-bottom: 20px;
+            display: flex; flex-direction: column;
+        }
+        .window-header {
+            height: 35px; border-bottom: 1px solid rgba(255,255,255,0.6);
+            display: flex; align-items: center; padding: 0 15px;
+            cursor: grab; background: rgba(255,255,255,0.4);
+            border-radius: 18px 18px 0 0; font-size: 0.85rem; color: var(--color-text-gray);
+            font-weight: 600;
+        }
+        .window-header:active { cursor: grabbing; }
+        .window-content { padding: 20px; }
+
+        /* Portfolio 窗口 */
+        #portfolio-window { top: 40%; left: 50%; transform: translate(-50%, -50%); width: 400px; }
+        .portfolio-title { font-family: var(--font-title); font-size: 3.5rem; color: var(--color-accent); text-align: center; }
+        .portfolio-desc { text-align: center; color: var(--color-text-gray); margin-top: 10px; font-weight: 600; }
+
+        /* 音乐播放器 */
+        #music-window { top: 80px; right: 350px; width: 320px; }
+        .music-flex { display: flex; align-items: center; gap: 15px; }
+        .music-cover { width: 70px; height: 70px; background: #ddd; border-radius: 10px; overflow: hidden; }
+        .music-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .music-info h4 { font-size: 0.95rem; color: var(--color-text-dark); margin-bottom: 4px;}
+        .music-info p { font-size: 0.8rem; color: var(--color-text-gray);}
+        .music-controls { margin-top: 15px; display: flex; justify-content: center; gap: 20px; font-weight: bold; color: var(--color-text-dark); font-size: 1.2rem;}
+
+        /* ================= 桌面图标 ================= */
+        #desktop-icons {
+            position: absolute; right: 60px; top: 150px;
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 30px; z-index: 10;
+        }
+        .icon-item {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            cursor: pointer; width: 80px;
+        }
+        .icon-img-box {
+            width: 65px; height: 65px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 16px; border: 1px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .icon-img-box img { width: 75%; height: 75%; object-fit: contain; }
+        .icon-text {
+            font-size: 0.85rem; font-weight: 700; color: var(--color-text-dark);
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            text-align: center;
+        }
+        .icon-item:hover .icon-img-box {
+            transform: scale(1.1); box-shadow: 0 8px 20px rgba(242, 157, 128, 0.4);
+        }
+
+        /* ================= 物理层 ================= */
+        #physics-canvas {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 5; pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Apple 风格滑动解锁开屏 -->
+    <div id="boot-screen">
+        <div class="lock-container" id="lockContainer">
+            <div class="slide-progress" id="slideProgress"></div>
+            <div class="slide-track">
+                <div class="slide-button" id="slideButton">→</div>
+            </div>
+            <div class="slide-text" id="slideText">slide to unlock</div>
+        </div>
+        <div class="boot-subtitle" id="bootSubtitle">Dreamy Portfolio OS</div>
+    </div>
+
+    <!-- 桌面系统 -->
+    <div id="desktop">
+        
+        <!-- 背景层 -->
+        <div id="background-layer"></div>
+        
+        <!-- 滚动缩放层 -->
+        <div id="zoom-layer">
+            
+            <!-- SVG 黑星星装饰 -->
+            <svg class="star-dec star-1" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
+            <svg class="star-dec star-2" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
+            <svg class="star-dec star-3" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
+            <svg class="star-dec star-4" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#111"/></svg>
+            <svg class="star-dec star-5" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke-width="2"/></svg>
+
+            <!-- 物理掉落层 -->
+            <div id="physics-canvas"></div>
+            
+        </div>
+
+        <!-- 时钟挂件 -->
+        <div id="clock-widget" class="glass">
+            <div class="clock-date" id="date-display">Monday, 20 May</div>
+            <div class="flip-group">
+                <div class="flip-card" id="hours">12</div>
+                <div style="font-size: 4rem; color: var(--color-white); font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.1);">:</div>
+                <div class="flip-card" id="minutes">00</div>
+            </div>
+        </div>
+
+        <!-- Portfolio 弹窗 -->
+        <div id="portfolio-window" class="glass window-popup">
+            <div class="window-header" id="portfolio-header">
+                <span>Sticky Note.txt</span>
+            </div>
+            <div class="window-content">
+                <h1 class="portfolio-title" id="portfolioTitle">XXX's<br>Portfolio</h1>
+                <p class="portfolio-desc" id="portfolioDesc">✧ Welcome to my creative world ✧</p>
+            </div>
+        </div>
+
+        <!-- 音乐播放器弹窗 -->
+        <div id="music-window" class="glass window-popup">
+            <div class="window-header" id="music-header">
+                <span>Music Player</span>
+            </div>
+            <div class="window-content music-flex">
+                <div class="music-cover" id="musicCover">
+                    <div style="width:100%; height:100%; background:pink; display:flex; justify-content:center; align-items:center; color:white; font-size:2rem;">♡</div>
+                </div>
+                <div class="music-info">
+                    <h4 id="musicTitle">Aesthetic Vibes</h4>
+                    <p id="musicArtist">Playing now...</p>
+                    <div class="music-controls">
+                        <span>|◁</span> <span>||</span> <span>▷|</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 桌面图标网格 -->
+        <div id="desktop-icons"></div>
+
+    </div>
+
+    <!-- 引入数据配置 -->
+    <script src="data.js"></script>
+    
+    <script>
+        // ================= 1. 初始化数据 =================
+        function initData() {
+            // 设置背景
+            const bgLayer = document.getElementById('background-layer');
+            if (siteData.background.useCustomImage && siteData.background.customImageUrl) {
+                bgLayer.style.backgroundImage = `url(${siteData.background.customImageUrl})`;
+            } else {
+                bgLayer.style.background = `radial-gradient(circle at 50% 50%, ${siteData.background.gradientColors.center} 0%, ${siteData.background.gradientColors.edge} 100%)`;
+            }
+
+            // 设置开屏文字
+            document.getElementById('slideText').innerText = siteData.bootScreen.text;
+            document.getElementById('bootSubtitle').innerText = siteData.bootScreen.subText;
+
+            // 设置 Portfolio 信息
+            document.getElementById('portfolioTitle').innerHTML = siteData.siteName.replace("'s", "'s<br>");
+            document.getElementById('portfolioDesc').innerText = siteData.subtitle;
+
+            // 设置音乐播放器
+            if (siteData.musicPlayer.show) {
+                document.getElementById('musicTitle').innerText = siteData.musicPlayer.title;
+                document.getElementById('musicArtist').innerText = siteData.musicPlayer.artist;
+                if (siteData.musicPlayer.coverImage) {
+                    document.getElementById('musicCover').innerHTML = `<img src="${siteData.musicPlayer.coverImage}" alt="cover">`;
+                }
+            } else {
+                document.getElementById('music-window').style.display = 'none';
+            }
+
+            // 生成桌面图标
+            const iconsContainer = document.getElementById('desktop-icons');
+            siteData.desktopIcons.forEach(icon => {
+                const iconEl = document.createElement('div');
+                iconEl.className = 'icon-item';
+                iconEl.onclick = () => handleIconClick(icon.action);
+                iconEl.innerHTML = `
+                    <div class="icon-img-box">
+                        <img src="${icon.icon}" alt="${icon.name}">
+                    </div>
+                    <span class="icon-text">${icon.name}</span>
+                `;
+                iconsContainer.appendChild(iconEl);
+            });
+        }
+
+        function handleIconClick(action) {
+            alert(`导航到: ${action} 页面\n（后续会实现页面跳转）`);
+        }
+
+        // ================= 2. Apple 滑动解锁 =================
+        function initSlideUnlock() {
+            const container = document.getElementById('lockContainer');
+            const button = document.getElementById('slideButton');
+            const progress = document.getElementById('slideProgress');
+            const text = document.getElementById('slideText');
+            
+            let isDragging = false;
+            let startX = 0;
+            let currentX = 0;
+            const maxSlide = container.offsetWidth - button.offsetWidth - 20;
+
+            button.addEventListener('mousedown', startDrag);
+            button.addEventListener('touchstart', startDrag);
+
+            function startDrag(e) {
+                isDragging = true;
+                startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('touchmove', onDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+                currentX = Math.max(0, Math.min(maxSlide, clientX - startX));
+                
+                button.style.transform = `translateX(${currentX}px)`;
+                progress.style.width = `${(currentX / maxSlide) * 100}%`;
+                text.style.opacity = 1 - (currentX / maxSlide);
+
+                // 完成解锁
+                if (currentX >= maxSlide * 0.9) {
+                    unlock();
+                }
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                // 未完成则回弹
+                if (currentX < maxSlide * 0.9) {
+                    button.style.transition = 'transform 0.3s ease-out';
+                    button.style.transform = 'translateX(0)';
+                    progress.style.transition = 'width 0.3s ease-out';
+                    progress.style.width = '0%';
+                    text.style.opacity = '1';
+                    setTimeout(() => {
+                        button.style.transition = '';
+                        progress.style.transition = '';
+                    }, 300);
+                }
+                
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+            }
+
+            function unlock() {
+                isDragging = false;
+                button.style.transform = `translateX(${maxSlide}px)`;
+                progress.style.width = '100%';
+                text.style.opacity = '0';
+                
+                setTimeout(() => {
+                    document.getElementById('boot-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('boot-screen').style.display = 'none';
+                        document.getElementById('desktop').style.opacity = '1';
+                        initClock();
+                        initPhysics();
+                    }, 600);
+                }, 300);
+            }
+        }
+
+        // ================= 3. 时钟 =================
+        function initClock() {
+            const hEl = document.getElementById('hours');
+            const mEl = document.getElementById('minutes');
+            const dEl = document.getElementById('date-display');
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];                e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+            function closeDragElement() {
+                document.onmouseup = null; document.onmousemove = null;
+            }
+        }
+
+        // ================= 6. Matter.js 物理掉落 =================
+        function initPhysics() {
+            const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
+            const engine = Engine.create();
+            const width = window.innerWidth, height = window.innerHeight;
+
+            const render = Render.create({
+                element: document.getElementById('physics-canvas'),
+                engine: engine,
+                options: { width, height, background: 'transparent', wireframes: false }
+            });
+
+            // 扩充掉落物件数组
+            const itemUrls = [];
+            for(let i = 0; i < siteData.fallingItemsCount; i++) {
+                itemUrls.push(siteData.fallingItems[i % siteData.fallingItems.length]);
+            }
+
+            const items = [];
+            
+            // 陆续掉落
+            itemUrls.forEach((url, index) => {
+                setTimeout(() => {
+                    const xPos = Math.random() * (width - 300) + 150;
+                    const scale = 0.07 + (Math.random() * 0.03); 
+                    const body = Bodies.circle(xPos, -50, 45, {
+                        restitution: 0.9,
+                        friction: 0.05,
+                        render: { sprite: { texture: url, xScale: scale, yScale: scale } }
+                    });
+                    items.push(body);
+                    Composite.add(engine.world, body);
+                }, index * 250);
+            });
+
+            // 边界
+            const ground = Bodies.rectangle(width/2, height+25, width, 50, { isStatic: true, render:{visible:false} });
+            const left = Bodies.rectangle(-25, height/2, 50, height, { isStatic: true, render:{visible:false} });
+            const right = Bodies.rectangle(width+25, height/2, 50, height, { isStatic: true, render:{visible:false} });
+            Composite.add(engine.world, [ground, left, right]);
+
+            // 鼠标交互
+            const mouse = Mouse.create(render.canvas);
+            const mConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: { stiffness: 0.2, render: { visible: false } }
+            });
+            Composite.add(engine.world, mConstraint);
+            render.mouse = mouse;
+
+            Matter.Events.on(mConstraint, 'mousedown', function(event) {
+                const clicked = Matter.Query.point(items, event.mouse.position);
+                if (clicked.length > 0) {
+                    const body = clicked[0];
+                    Matter.Body.applyForce(body, body.position, {
+                        x: (Math.random() - 0.5) * 0.2, 
+                        y: -0.25
+                    });
+                    Matter.Body.setAngularVelocity(body, (Math.random() - 0.5));
+                }
+            });
+
+            Render.run(render);
+            Runner.run(Runner.create(), engine);
+
+            window.addEventListener('resize', () => {
+                render.canvas.width = window.innerWidth; 
+                render.canvas.height = window.innerHeight;
+                Matter.Body.setPosition(ground, {x: window.innerWidth/2, y: window.innerHeight+25});
+                Matter.Body.setPosition(right, {x: window.innerWidth+25, y: window.innerHeight/2});
+            });
+        }
+
+        // ================= 7. 页面加载 =================
+        window.onload = () => {
+            initData();
+            initSlideUnlock();
+            makeDraggable(document.getElementById("portfolio-window"), "portfolio-header");
+            makeDraggable(document.getElementById("music-window"), "music-header");
+        };
+    </script>
+</body>
+</html>
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            function update() {
+                const now = new Date();
+                hEl.innerText = now.getHours().toString().padStart(2, '0');
+                mEl.innerText = now.getMinutes().toString().padStart(2, '0');
+                dEl.innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+            }
+            update(); setInterval(update, 1000);
+        }
+
+        // ================= 4. 滚轮缩放 =================
+        let zoomLevel = 1;
+        const zoomLayer = document.getElementById('zoom-layer');
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY < 0) zoomLevel += 0.05;
+            else zoomLevel -= 0.05;
+            zoomLevel = Math.min(Math.max(1, zoomLevel), 1.3);
+            zoomLayer.style.transform = `scale(${zoomLevel})`;
+        });
+
+        // ================= 5. 弹窗拖拽 =================
+        function makeDraggable(elmnt, headerId) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            document.getElementById(headerId).onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event; e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                document.querySelectorAll('.window-popup').forEach(w => w.style.zIndex = 10);
+                elmnt.style.zIndex = 11;
+            }
+            function elementDrag(e) {
+                e = e || window.event; e.preventDefault();
+                pos1 = pos3 - e.clientX; pos2 = pos4 -
