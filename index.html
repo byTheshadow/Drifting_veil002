@@ -311,6 +311,72 @@
             pointer-events: none;
         }
 
+        /* ================= 🖼️ 图片预览框 ================= */
+        .photo-frame {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .photo-frame .window-content {
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .photo-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            color: white;
+            padding: 15px;
+            font-size: 0.85rem;
+            font-family: var(--font-cute-cn);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .photo-frame:hover .photo-caption {
+            opacity: 1;
+        }
+
+        /* 两个图片框的默认位置 */
+        #photo-frame-1 {
+            top: 250px;
+            right: 80px;
+            width: 220px;
+            height: 280px;
+            transform: rotate(-3deg);
+        }
+
+        #photo-frame-2 {
+            top: 380px;
+            right: 320px;
+            width: 200px;
+            height: 260px;
+            transform: rotate(5deg);
+        }
+
+        /* 悬停时轻微旋转回正 */
+        .photo-frame:hover {
+            transform: rotate(0deg) !important;
+            transition: transform 0.3s ease;
+        }
+
         #desktop-icons {
             position: absolute; right: 60px; top: 150px;
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -412,7 +478,7 @@
             </div>
         </div>
 
-        <!-- 🎬 新增：电影字幕式更新日志窗口 -->
+        <!-- 🎬 电影字幕式更新日志窗口 -->
         <div id="updates-window" class="glass window-popup">
             <div class="window-header" id="updates-header">
                 <span>✨ Updates & News</span>
@@ -423,6 +489,28 @@
                         <!-- 内容将由 JavaScript 动态生成 -->
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 🖼️ 图片预览框 1 -->
+        <div id="photo-frame-1" class="glass window-popup photo-frame">
+            <div class="window-header" id="photo-header-1">
+                <span>📷 Memory</span>
+            </div>
+            <div class="window-content">
+                <img src="" alt="Preview" class="photo-preview" id="photo-img-1">
+                <div class="photo-caption" id="photo-caption-1">Sweet Moment ♡</div>
+            </div>
+        </div>
+
+        <!-- 🖼️ 图片预览框 2 -->
+        <div id="photo-frame-2" class="glass window-popup photo-frame">
+            <div class="window-header" id="photo-header-2">
+                <span>🌸 Gallery</span>
+            </div>
+            <div class="window-content">
+                <img src="" alt="Preview" class="photo-preview" id="photo-img-2">
+                <div class="photo-caption" id="photo-caption-2">Dreamy Vibes ✨</div>
             </div>
         </div>
 
@@ -442,11 +530,9 @@
             
             // 设置底层渐变背景
             if (siteData.background.useCustomImage && siteData.background.customImageUrl) {
-                // 如果用户设置了自定义背景，替换装饰层
                 decoLayer.style.backgroundImage = `url(${siteData.background.customImageUrl})`;
                 decoLayer.style.opacity = '0.7';
             } else {
-                // 使用默认配置
                 bgLayer.style.background = `radial-gradient(circle at 50% 50%, ${siteData.background.gradientColors.center} 0%, ${siteData.background.gradientColors.edge} 100%)`;
             }
 
@@ -473,6 +559,14 @@
                 document.getElementById('updates-window').style.display = 'none';
             }
 
+            // 🖼️ 初始化图片预览框
+            if (siteData.photoFrames && siteData.photoFrames.show) {
+                initPhotoFrames();
+            } else {
+                document.getElementById('photo-frame-1').style.display = 'none';
+                document.getElementById('photo-frame-2').style.display = 'none';
+            }
+
             const iconsContainer = document.getElementById('desktop-icons');
             siteData.desktopIcons.forEach(icon => {
                 const iconEl = document.createElement('div');
@@ -493,7 +587,6 @@
             const scrollContainer = document.getElementById('creditsScroll');
             let html = '';
             
-            // 生成两遍内容以实现无缝循环
             for (let repeat = 0; repeat < 2; repeat++) {
                 siteData.updates.items.forEach((item, index) => {
                     html += `
@@ -510,6 +603,27 @@
             }
             
             scrollContainer.innerHTML = html;
+        }
+
+        // 🖼️ 初始化图片预览框
+        function initPhotoFrames() {
+            const frames = siteData.photoFrames.frames;
+            
+            if (frames[0]) {
+                document.getElementById('photo-img-1').src = frames[0].image;
+                document.getElementById('photo-caption-1').innerText = frames[0].caption;
+                document.getElementById('photo-header-1').querySelector('span').innerText = frames[0].title;
+            } else {
+                document.getElementById('photo-frame-1').style.display = 'none';
+            }
+            
+            if (frames[1]) {
+                document.getElementById('photo-img-2').src = frames[1].image;
+                document.getElementById('photo-caption-2').innerText = frames[1].caption;
+                document.getElementById('photo-header-2').querySelector('span').innerText = frames[1].title;
+            } else {
+                document.getElementById('photo-frame-2').style.display = 'none';
+            }
         }
 
         function handleIconClick(action) {
@@ -538,8 +652,7 @@
                 document.addEventListener('touchmove', onDrag);
                 document.addEventListener('mouseup', stopDrag);
                 document.addEventListener('touchend', stopDrag);
-                e.preventDefault();
-            }
+                e.preventDefault();            }
 
             function onDrag(e) {
                 if (!isDragging) return;
@@ -620,7 +733,7 @@
         const zoomLayer = document.getElementById('zoom-layer');
         window.addEventListener('wheel', (e) => {
             if (e.deltaY < 0) zoomLevel += 0.05;
-                        else zoomLevel -= 0.05;
+            else zoomLevel -= 0.05;
             zoomLevel = Math.min(Math.max(1, zoomLevel), 1.3);
             zoomLayer.style.transform = `scale(${zoomLevel})`;
         });
@@ -739,8 +852,11 @@
             makeDraggable(document.getElementById("portfolio-window"), "portfolio-header");
             makeDraggable(document.getElementById("music-window"), "music-header");
             makeDraggable(document.getElementById("updates-window"), "updates-header");
+            makeDraggable(document.getElementById("photo-frame-1"), "photo-header-1");
+            makeDraggable(document.getElementById("photo-frame-2"), "photo-header-2");
         };
     </script>
 </body>
 </html>
+
 
