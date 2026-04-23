@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character Cards - Sweet Notepad</title>
     
-    <!-- 引入优雅的字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,500&family=Nunito:wght@400;600;800;900&family=Satisfy&display=swap" rel="stylesheet">
+    <!-- 引入可爱字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bubblegum+Sans&family=Pacifico&family=Caveat:wght@400;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
     
     <!-- 中文可爱字体 -->
     <style>
@@ -24,10 +24,10 @@
             --color-text-gray: #888888;
             --color-cream: #FFF3E8;
             
-            --font-title: 'Playfair Display', serif;
-            --font-body: 'Nunito', sans-serif;
-            --font-hand: 'Satisfy', cursive;
-            --font-cute-cn: 'KeinannMaruPOP', sans-serif;
+            --font-title: 'Bubblegum Sans', 'KeinannMaruPOP', cursive;
+            --font-body: 'Fredoka', 'KeinannMaruPOP', sans-serif;
+            --font-hand: 'Pacifico', 'Caveat', 'Patrick Hand', cursive;
+            --font-cute-cn: 'KeinannMaruPOP', 'Fredoka', sans-serif;
         }
 
         * { 
@@ -125,7 +125,8 @@
             padding: 15px 12px; 
             writing-mode: vertical-rl;
             border-radius: 0 12px 12px 0; 
-            font-weight: 800; 
+            font-weight: 700; 
+            font-family: var(--font-body);
             color: #db7681;
             cursor: pointer; 
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -177,7 +178,7 @@
             font-size: 4.5rem; 
             line-height: 0.9; 
             color: var(--color-text-dark); 
-            letter-spacing: -1px; 
+            letter-spacing: 1px; 
         }
         
         .char-meta { 
@@ -186,7 +187,8 @@
         
         .char-group { 
             font-size: 0.8rem; 
-            font-weight: 900; 
+            font-weight: 700; 
+            font-family: var(--font-body);
             color: var(--color-accent); 
             letter-spacing: 3px; 
             text-transform: uppercase; 
@@ -194,9 +196,8 @@
         }
         
         .char-date { 
-            font-family: var(--font-title); 
-            font-style: italic; 
-            font-size: 1.2rem; 
+            font-family: var(--font-hand); 
+            font-size: 1.3rem; 
             color: var(--color-text-gray); 
         }
 
@@ -317,11 +318,12 @@
             left: 4px; 
             color: var(--color-accent); 
             font-size: 14px; 
-            font-weight: 900;
+            font-weight: 700;
         }
         
         .task-text { 
             font-size: 1rem; 
+            font-family: var(--font-body);
             color: var(--color-text-dark); 
             line-height: 1.5; 
             font-weight: 600; 
@@ -528,5 +530,6 @@
 
 </body>
 </html>
+
 
 
