@@ -626,9 +626,31 @@
             }
         }
 
-        function handleIconClick(action) {
-            alert(`导航到: ${action} 页面\n（后续会实现页面跳转）`);
+       function handleIconClick(action) {
+    // 添加淡出动画
+    document.getElementById('desktop').style.transition = 'opacity 0.3s';
+    document.getElementById('desktop').style.opacity = '0';
+    
+    setTimeout(() => {
+        switch(action) {
+            case 'cards':
+                window.location.href = 'characters.html';
+                break;
+            case 'about':
+                window.location.href = 'about-me.html';
+                break;
+            case 'gallery':
+                window.location.href = 'gallery.html';
+                break;
+            case 'home':
+                window.location.href = 'index.html';
+                break;
+            default:
+                alert(`导航到: ${action} 页面`);
         }
+    }, 300);
+}
+
 
         function initSlideUnlock() {
             const container = document.getElementById('lockContainer');
