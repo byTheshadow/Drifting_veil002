@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Cards - Sweet Notepad</title>
+    <title>Character Detail - White Minimal Zine</title>
     
     <!-- 字体引入 -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,500&family=Nunito:wght@400;600;800;900&family=Satisfy&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,900;1,900&family=Satisfy&family=Nunito:wght@400;700;900&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- 中文可爱字体 -->
     <style>
@@ -16,415 +16,286 @@
     
     <style>
         :root {
-            --color-bg: #FAD8DF;
-            --color-paper: #FFFFFF;
-            --color-accent: #F29D80;
-            --color-text-dark: #333333;
-            --color-text-gray: #888888;
+            --color-pure-white: #FFFFFF;
+            --color-off-white: #FFF9F5;
+            --color-soft-pink: #FAD8DF;
+            --color-coral: #F29D80;
             --color-cream: #FFF3E8;
+            --color-black: #222222;
             
-            --font-title: 'Playfair Display', serif;
-            --font-body: 'Nunito', sans-serif;
+            --font-bold: 'Bebas Neue', sans-serif;
+            --font-serif: 'Playfair Display', serif;
             --font-hand: 'Satisfy', cursive;
-            --font-elegant: 'Dancing Script', cursive;
+            --font-handwrite: 'Dancing Script', cursive;
+            --font-ui: 'Nunito', sans-serif;
             --font-cute-cn: 'KeinannMaruPOP', sans-serif;
         }
 
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            user-select: none; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--color-bg);
-            background-image: radial-gradient(circle at 50% 50%, var(--color-cream) 0%, transparent 80%);
+            background-color: var(--color-pure-white);
+            background-image: radial-gradient(circle at 80% 20%, #fff0f3 0%, transparent 40%);
+            font-family: var(--font-ui);
+            color: var(--color-black);
+            min-height: 100vh;
             display: flex; 
             justify-content: center; 
             align-items: center;
-            min-height: 100vh; 
-            font-family: var(--font-body); 
-            color: var(--color-text-dark);
             overflow: hidden;
+            padding: 20px;
         }
 
-        /* ================= 记事本主容器 ================= */
-        .notepad-wrapper {
-            position: relative;
-            width: 900px; 
-            height: 820px;
-            margin-top: 20px;
-        }
-
-        .notepad {
-            width: 100%; 
-            height: 100%;
-            background: var(--color-paper);
-            border-radius: 12px 12px 20px 20px;
-            box-shadow: 
-                0 30px 60px rgba(242, 157, 128, 0.2),
-                inset 0 0 50px rgba(0,0,0,0.02);
-            position: relative; 
-            z-index: 10;
-            display: flex; 
-            flex-direction: column;
-            padding: 50px 60px 40px 60px;
-        }
-
-        /* ================= 顶部线圈装订 ================= */
-        .spirals-container {
-            position: absolute; 
-            top: -15px; 
-            left: 0; 
-            width: 100%;
-            display: flex; 
-            justify-content: space-evenly; 
-            padding: 0 40px;
-            z-index: 20; 
-            pointer-events: none;
-        }
-
-        .spiral {
-            width: 12px; 
-            height: 35px;
-            background: linear-gradient(to right, #e0e0e0 0%, #ffffff 30%, #a3a3a3 100%);
-            border-radius: 6px;
-            box-shadow: 2px 5px 5px rgba(0,0,0,0.15), inset 0 1px 2px white;
-            position: relative;
-        }
-        
-        .spiral::after {
-            content: ''; 
-            position: absolute; 
-            bottom: 4px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            width: 14px; 
-            height: 14px; 
-            background: #222; 
-            border-radius: 50%;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); 
-            z-index: -1;
-        }
-
-        /* ================= 右侧索引 Tabs ================= */
-        .tabs {
-            position: absolute; 
-            right: -60px; 
-            top: 60px;
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            z-index: 5;
-        }
-        
-        .tab {
-            background: rgba(255, 255, 255, 0.6); 
-            backdrop-filter: blur(5px);
-            padding: 15px 12px; 
-            writing-mode: vertical-rl;
-            border-radius: 0 12px 12px 0; 
-            font-weight: 800; 
-            color: #db7681;
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 2px 5px 15px rgba(0,0,0,0.05); 
-            letter-spacing: 2px;
-            border: 1px solid rgba(255,255,255,0.8); 
-            border-left: none;
-            font-family: var(--font-cute-cn);
-        }
-        
-        .tab:hover { 
-            background: rgba(255, 255, 255, 0.9); 
-        }
-        
-        .tab.active {
-            background: var(--color-paper); 
-            color: var(--color-accent);
-            transform: translateX(10px); 
-            width: 60px; 
-            padding-left: 15px;
-            box-shadow: 5px 10px 20px rgba(242, 157, 128, 0.2); 
-            border-color: transparent;
-        }
-
-        /* ================= 内容区域 ================= */
-        .content-area {
-            flex: 1; 
-            display: flex; 
-            flex-direction: column;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-        
-        .content-area.fade-out { 
-            opacity: 0; 
-            transform: translateY(15px); 
-        }
-
-        /* 头部：名字与标签 */
-        .header-area { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid var(--color-accent); 
-            padding-bottom: 15px; 
-        }
-        
-        .char-name { 
-            font-family: var(--font-elegant); 
-            font-size: 4.5rem; 
-            line-height: 0.9; 
-            color: var(--color-text-dark); 
-            letter-spacing: -1px; 
-        }
-        
-        .char-name-en {
-            font-family: var(--font-title);
-            font-style: italic;
-            font-size: 2rem;
-            color: var(--color-text-gray);
-            margin-top: 5px;
-        }
-        
-        .char-meta { 
-            text-align: right; 
-        }
-        
-        .char-group { 
-            font-size: 0.8rem; 
-            font-weight: 900; 
-            color: var(--color-accent); 
-            letter-spacing: 3px; 
-            text-transform: uppercase; 
-            margin-bottom: 5px; 
-        }
-        
-        .char-date { 
-            font-family: var(--font-title); 
-            font-style: italic; 
-            font-size: 1.2rem; 
-            color: var(--color-text-gray); 
-        }
-
-        /* 中部：照片 + 信息分栏 */
-        .split-area { 
+        /* ================= 杂志容器：极致留白 ================= */
+        .zine-container {
+            width: 90vw; 
+            max-width: 1200px; 
+            height: 90vh;
             display: flex; 
             gap: 40px; 
-            margin-bottom: 30px; 
-        }
-        
-        .avatar-box {
-            width: 280px; 
-            height: 350px; 
-            background: var(--color-cream);
-            border-radius: 12px; 
-            overflow: hidden; 
             position: relative;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
-            flex-shrink: 0;
-            border: 8px solid white;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .avatar-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(242, 157, 128, 0.2);
-        }
-        
-        .avatar-box::after {
-            content: '点击查看详情 >';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-family: var(--font-cute-cn);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .avatar-box:hover::after {
-            opacity: 1;
-        }
-        
-        .avatar-box img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
-        
-        /* 照片胶带装饰 */
-        .tape { 
-            position: absolute; 
-            top: -10px; 
-            left: 50%; 
-            transform: translateX(-50%) rotate(-3deg); 
-            width: 80px; 
-            height: 25px; 
-            background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(2px); 
-            z-index: 10; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-            border: 1px solid rgba(255,255,255,0.4);
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .info-box { 
-            flex: 1; 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 左侧：垂直图像与标题区 */
+        .visual-area {
+            flex: 1.1; 
             display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: flex-start;
+        }
+
+        /* 图片容器：无遮挡 */
+        .image-frame {
+            width: 100%; 
+            height: 65%;
+            background: var(--color-off-white);
+            padding: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            position: relative; 
+            overflow: hidden;
+            transition: transform 0.5s ease;
         }
         
-        .section-title { 
-            font-family: var(--font-elegant); 
-            font-size: 1.8rem; 
-            color: var(--color-accent); 
-            margin-bottom: 10px; 
+        .image-frame:hover { 
+            transform: translateY(-10px); 
         }
         
+        .image-frame img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 标题放在图片正下方 */
+        .title-base {
+            margin-top: 25px;
+            font-family: var(--font-bold);
+            font-size: 8.5rem; 
+            line-height: 0.8;
+            color: var(--color-black);
+            letter-spacing: -3px;
+        }
+
+        .title-sub {
+            font-family: var(--font-cute-cn);
+            font-size: 2rem;
+            color: var(--color-coral);
+            margin-top: 10px;
+        }
+
+        /* ================= 右侧：轻盈排版区 ================= */
+        .content-area {
+            flex: 1; 
+            padding: 40px 0;
+            display: flex; 
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        /* 优雅的装饰线 */
+        .divider { 
+            width: 100px; 
+            height: 4px; 
+            background: var(--color-coral); 
+            margin-bottom: 30px; 
+        }
+
+        .sub-heading {
+            font-family: var(--font-serif); 
+            font-size: 3.5rem; 
+            font-style: italic;
+            color: var(--color-coral); 
+            margin-bottom: 20px;
+        }
+
+        /* 文字内容：更白的半透明卡片 */
+        .paper-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 30px; 
+            border-left: 1px solid var(--color-soft-pink);
+            margin-bottom: 40px;
+        }
+
+        .quote {
+            font-family: var(--font-cute-cn);
+            font-size: 1.8rem;
+            line-height: 1.5; 
+            color: #555;
+        }
+
         /* 标签容器 */
         .tags-container {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
         }
-        
+
         .tag {
-            background: var(--color-accent);
-            color: white;
-            padding: 6px 15px;
+            background: var(--color-soft-pink);
+            color: var(--color-coral);
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 700;
             font-family: var(--font-cute-cn);
-            box-shadow: 0 2px 8px rgba(242, 157, 128, 0.3);
-        }
-        
-        /* 任务列表 */
-        .task-list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-        
-        .task-item { 
-            display: flex; 
-            gap: 12px; 
-            align-items: flex-start; 
-        }
-        
-        .task-circle { 
-            width: 22px; 
-            height: 22px; 
-            border-radius: 50%; 
-            border: 2px solid #ccc; 
-            flex-shrink: 0; 
-            margin-top: 2px; 
-            position: relative; 
-            transition: 0.2s; 
-        }
-        
-        .task-item.checked .task-circle { 
-            border-color: var(--color-accent); 
-            background: rgba(242, 157, 128, 0.1); 
-        }
-        
-        .task-item.checked .task-circle::after { 
-            content: '✔'; 
-            position: absolute; 
-            top: -2px; 
-            left: 4px; 
-            color: var(--color-accent); 
-            font-size: 14px; 
-            font-weight: 900;
-        }
-        
-        .task-text { 
-            font-size: 1rem; 
-            color: var(--color-text-dark); 
-            line-height: 1.5; 
-            font-weight: 600; 
-        }
-        
-        .task-item.checked .task-text { 
-            color: #aaa; 
-            text-decoration: line-through; 
-            text-decoration-thickness: 2px; 
-            text-decoration-color: var(--color-bg); 
         }
 
-        /* 底部：日记本区域 */
-        .journal-area {
-            flex: 1; 
-            position: relative; 
-            padding-top: 15px;
-            background-image: repeating-linear-gradient(
-                transparent, 
-                transparent 34px, 
-                rgba(0,0,0,0.06) 34px, 
-                rgba(0,0,0,0.06) 35px
-            );
+        /* 详细参数网格 */
+        .stats-list {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 25px;
         }
         
-        .journal-text {
-            font-family: var(--font-hand); 
-            font-size: 1.8rem; 
-            color: #555;
-            line-height: 35px;
-            padding-top: 2px;
+        .stat-box h5 { 
+            font-size: 0.75rem; 
+            letter-spacing: 3px; 
+            color: #bbb; 
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
+        }
+        
+        .stat-box p { 
+            font-weight: 800; 
+            font-size: 1.1rem; 
+            color: var(--color-black);
+            font-family: var(--font-cute-cn);
+        }
+
+        /* ================= 装饰元素 ================= */
+        .decor-star {
+            position: absolute; 
+            top: 10%; 
+            right: 0;
+            width: 100px; 
+            height: 100px; 
+            background: var(--color-soft-pink);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: floating 6s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        .small-cross {
+            position: absolute; 
+            bottom: 50px; 
+            left: 0;
+            font-size: 1.5rem; 
+            color: var(--color-coral); 
+            opacity: 0.5;
+        }
+
+        /* 页码与边缘标注 */
+        .side-label {
+            position: absolute; 
+            right: -50px; 
+            bottom: 100px;
+            transform: rotate(-90deg); 
+            font-size: 0.7rem; 
+            font-weight: 900;
+            letter-spacing: 4px; 
+            color: #ccc;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(20deg); }
+        }
+
+        /* 鼠标跟随的小光点 */
+        #cursor-glow {
+            position: fixed; 
+            width: 300px; 
+            height: 300px;
+            background: radial-gradient(circle, rgba(242, 157, 128, 0.1) 0%, transparent 70%);
+            pointer-events: none; 
+            transform: translate(-50%, -50%); 
+            z-index: 100;
         }
 
         /* 响应式设计 */
         @media (max-width: 1024px) {
-            .notepad-wrapper {
-                width: 90vw;
-                height: 90vh;
-            }
-            
-            .notepad {
-                padding: 40px 40px;
-            }
-            
-            .char-name {
-                font-size: 3.5rem;
-            }
-            
-            .split-area {
+            .zine-container {
                 flex-direction: column;
-                align-items: center;
+                height: auto;
+                gap: 30px;
             }
-            
-            .avatar-box {
+
+            .visual-area {
                 width: 100%;
-                max-width: 350px;
+            }
+
+            .image-frame {
+                height: 400px;
+            }
+
+            .title-base {
+                font-size: 5rem;
+            }
+
+            .sub-heading {
+                font-size: 2.5rem;
+            }
+
+            .content-area {
+                padding: 20px 0;
+            }
+
+            .side-label {
+                display: none;
             }
         }
 
         @media (max-width: 768px) {
-            .notepad {
-                padding: 30px 25px;
+            .title-base {
+                font-size: 4rem;
             }
-            
-            .char-name {
-                font-size: 2.5rem;
+
+            .sub-heading {
+                font-size: 2rem;
             }
-            
-            .tabs {
-                display: none;
-            }
-            
-            .journal-text {
+
+            .quote {
                 font-size: 1.4rem;
-                line-height: 30px;
+            }
+
+            .stats-list {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .paper-card {
+                padding: 20px;
             }
         }
 
@@ -432,136 +303,138 @@
 </head>
 <body>
 
-    <div class="notepad-wrapper">
+    <!-- 鼠标跟随光晕 -->
+    <div id="cursor-glow"></div>
+
+    <div class="zine-container">
         
-        <!-- 顶部金属线圈 -->
-        <div class="spirals-container">
-            <script>for(let i=0; i<18; i++) document.write('<div class="spiral"></div>');</script>
+        <!-- 左侧：核心视觉区 (照片+大标题) -->
+        <div class="visual-area">
+            <div class="image-frame">
+                <img id="charImage" src="" alt="Character">
+            </div>
+            <h1 class="title-base" id="charNameEn">LOADING...</h1>
+            <div class="title-sub" id="charName">加载中...</div>
         </div>
 
-        <!-- 侧边切换标签 -->
-        <div class="tabs" id="tabs-container"></div>
+        <!-- 右侧：详细内容区 -->
+        <div class="content-area">
+            <div class="divider"></div>
+            <h2 class="sub-heading" id="charTitle">The Character</h2>
+            
+            <!-- 标签 -->
+            <div class="tags-container" id="tagsContainer"></div>
+            
+            <div class="paper-card">
+                <p class="quote" id="charJournal">
+                    "Loading character information..."
+                </p>
+            </div>
 
-        <!-- 记事本主纸张 -->
-        <div class="notepad">
-            <div class="content-area" id="content-area"></div>
+            <div class="stats-list" id="statsContainer">
+                <!-- 动态生成 -->
+            </div>
         </div>
+
+        <!-- 装饰 -->
+        <div class="decor-star"></div>
+        <div class="small-cross">✦ ✦ ✦</div>
+        <div class="side-label">CHARACTER ARCHIVE / SWEET COLLECTION</div>
 
     </div>
 
-    <!-- 引入数据和导航组件 -->
+    <!-- 引入数据 -->
     <script src="characters-data.js"></script>
-    <script src="nav-component.js"></script>
     
+    <!-- 全局导航组件 -->
+    <script src="nav-component.js"></script>
+
     <script>
-        const contentArea = document.getElementById('content-area');
-        const tabsContainer = document.getElementById('tabs-container');
-        let currentIndex = 0;
-
-        /* ================= 渲染 Tabs ================= */
-        function initTabs() {
-            charactersData.forEach((char, index) => {
-                const tab = document.createElement('div');
-                tab.className = `tab ${index === 0 ? 'active' : ''}`;
-                tab.innerText = `角色 ${char.no}`;
-                tab.onclick = () => switchCharacter(index);
-                tabsContainer.appendChild(tab);
-            });
-        }
-
-        /* ================= 渲染页面内容 ================= */
-        function renderContent(index) {
-            const char = charactersData[index];
-            
-            // 生成标签 HTML
-            const tagsHTML = char.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-            
-            // 生成任务列表 HTML
-            const tasksHTML = char.tasks.map(task => `
-                <div class="task-item ${task.checked ? 'checked' : ''}">
-                    <div class="task-circle"></div>
-                    <div class="task-text">${task.text}</div>
-                </div>
-            `).join('');
-
-            // 处理日记换行
-            const journalFormatted = char.journal.replace(/\n/g, '<br>');
-
-            contentArea.innerHTML = `
-                <div class="header-area">
-                    <div>
-                        <h1 class="char-name">${char.name}</h1>
-                        <div class="char-name-en">${char.nameEn}</div>
-                    </div>
-                    <div class="char-meta">
-                        <div class="char-group">${char.group}</div>
-                        <div class="char-date">${char.date}</div>
-                    </div>
-                </div>
-
-                <div class="split-area">
-                    <div class="avatar-box" onclick="goToDetail('${char.id}')">
-                        <div class="tape"></div>
-                        <img src="${char.avatar}" alt="${char.name}">
-                    </div>
-                    
-                    <div class="info-box">
-                        <div>
-                            <h2 class="section-title">Tags</h2>
-                            <div class="tags-container">${tagsHTML}</div>
-                        </div>
-                        
-                        <div>
-                            <h2 class="section-title">To-Do List</h2>
-                            <div class="task-list">${tasksHTML}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="journal-area">
-                    <h2 class="section-title" style="margin-bottom:5px;">Journal & Notes</h2>
-                    <div class="journal-text">${journalFormatted}</div>
-                </div>
-            `;
-        }
-
-        /* ================= 切换逻辑与动效 ================= */
-        let isAnimating = false;
-
-        function switchCharacter(index) {
-            if (isAnimating || index === currentIndex) return;
-            isAnimating = true;
-
-            // 更新 Tab 状态
-            const tabs = document.querySelectorAll('.tab');
-            tabs[currentIndex].classList.remove('active');
-            tabs[index].classList.add('active');
-            
-            currentIndex = index;
-
-            // 内容淡出
-            contentArea.classList.add('fade-out');
-
-            // 等待淡出结束后，更新内容并淡入
-            setTimeout(() => {
-                renderContent(index);
-                contentArea.classList.remove('fade-out');
-                
-                setTimeout(() => { isAnimating = false; }, 400);
-            }, 300);
-        }
+        // 鼠标跟随光晕效果
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
 
         // 跳转到角色详情页
         function goToDetail(charId) {
-            alert(`即将查看角色详情: ${charId}\n（详情页开发中...）`);
-            // window.location.href = `character-detail.html?id=${charId}`;
+            window.location.href = `character-detail.html?id=${charId}`;
         }
 
-        // 初始化
-        initTabs();
-        renderContent(0);
+        // 从URL获取角色ID
+        function getCharacterId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
 
+        // 加载角色数据
+        function loadCharacterData() {
+            const charId = getCharacterId();
+            
+            if (!charId) {
+                alert('未找到角色信息');
+                window.location.href = 'characters.html';
+                return;
+            }
+
+            // 从 characters-data.js 中查找角色
+            const character = charactersData.find(char => char.id === charId);
+
+            if (!character) {
+                alert('角色不存在');
+                window.location.href = 'characters.html';
+                return;
+            }
+
+            // 填充数据
+            document.getElementById('charImage').src = character.avatar;
+            document.getElementById('charNameEn').textContent = character.nameEn.toUpperCase();
+            document.getElementById('charName').textContent = character.name;
+            document.getElementById('charTitle').textContent = character.preview || 'The Character';
+            document.getElementById('charJournal').textContent = character.journal;
+
+            // 填充标签
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            character.tags.forEach(tag => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.textContent = tag;
+                tagsContainer.appendChild(tagEl);
+            });
+
+            // 填充统计信息
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <h5>GROUP</h5>
+                    <p>${character.group}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>NUMBER</h5>
+                    <p>NO.${character.no}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>DATE</h5>
+                    <p>${character.date}</p>
+                </div>
+                <div class="stat-box">
+                    <h5>TASKS</h5>
+                    <p>${character.tasks.filter(t => t.checked).length}/${character.tasks.length} Done</p>
+                </div>
+            `;
+
+            // 更新页面标题
+            document.title = `${character.name} - Character Detail`;
+        }
+
+        // 页面加载时执行
+        window.onload = () => {
+            loadCharacterData();
+        };
     </script>
 </body>
 </html>
+
 
