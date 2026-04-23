@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character Cards - Sweet Binder</title>
     
-    <!-- 字体引入 -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Nunito:wght@400;600;700;800&family=Dancing+Script:wght@400;700&family=Satisfy&display=swap" rel="stylesheet">
     
-    <!-- 中文可爱字体 -->
     <style>
         @import url("https://fontsapi.zeoseven.com/850/main/result.css");
         @import url("https://fontsapi.zeoseven.com/802/main/result.css");
@@ -48,7 +46,6 @@
             position: relative;
         }
 
-        /* 返回按钮 */
         .back-button {
             position: fixed;
             top: 30px;
@@ -75,7 +72,6 @@
             box-shadow: 0 6px 20px rgba(242, 157, 128, 0.4);
         }
 
-        /* 活页本场景 */
         .scene {
             width: 1100px; 
             height: 750px;
@@ -92,7 +88,6 @@
             border-radius: 12px;
         }
 
-        /* 静态页底层 */
         .static-page {
             position: absolute; 
             top: 0; 
@@ -118,7 +113,6 @@
             border-left: 1px solid rgba(0,0,0,0.05); 
         }
 
-        /* 3D翻页纸张 */
         .flipper {
             position: absolute; 
             top: 0; 
@@ -160,7 +154,6 @@
             z-index: 1;
         }
 
-        /* 铁环装订 */
         .binder-spine {
             position: absolute; 
             top: 0; 
@@ -185,7 +178,6 @@
             position: relative;
         }
 
-        /* 右侧标签索引 */
         .tabs { 
             position: absolute; 
             right: -55px; 
@@ -215,7 +207,6 @@
             transform: translateX(10px); 
         }
 
-        /* 点击区域 */
         .click-zone { 
             position: absolute; 
             top: 0; 
@@ -228,7 +219,6 @@
         .click-left { left: 0; }
         .click-right { right: 0; }
 
-        /* 角色卡片内容样式 */
         .char-header { 
             display: flex; 
             justify-content: space-between; 
@@ -397,7 +387,6 @@
             font-size: 1rem;
         }
 
-        /* 响应式设计 */
         @media (max-width: 1200px) {
             .scene {
                 width: 90vw;
@@ -441,17 +430,14 @@
                 display: none;
             }
         }
-
     </style>
 </head>
 <body>
 
-    <!-- 返回按钮 -->
     <div class="back-button" onclick="goBack()">←</div>
 
     <div class="scene">
         <div class="book">
-            <!-- 铁环装订 -->
             <div class="binder-spine">
                 <div class="ring"></div>
                 <div class="ring"></div>
@@ -461,20 +447,16 @@
                 <div class="ring"></div>
             </div>
 
-            <!-- 右侧标签 -->
             <div class="tabs" id="tabs-container"></div>
 
-            <!-- 静态底层页面 -->
             <div class="static-page static-left" id="static-left"></div>
             <div class="static-page static-right" id="static-right"></div>
 
-            <!-- 3D翻页层 -->
             <div class="flipper" id="flipper">
                 <div class="flip-face flip-front" id="flip-front"></div>
                 <div class="flip-face flip-back" id="flip-back"></div>
             </div>
 
-            <!-- 点击区域 -->
             <div class="click-zone click-left" onclick="prev()"></div>
             <div class="click-zone click-right" onclick="next()"></div>
         </div>
@@ -483,7 +465,6 @@
     <script src="characters-data.js"></script>
     
     <script>
-        // 生成角色卡片HTML
         function getCharHTML(char) {
             return `
                 <div class="char-header">
@@ -524,8 +505,8 @@
             `;
         }
 
-        let currentPage = 0; // 当前页码 (0, 1, 2...)
-        let isLocked = false; // 翻页锁
+        let currentPage = 0;
+        let isLocked = false;
         const flipper = document.getElementById('flipper');
         const staticLeft = document.getElementById('static-left');
         const staticRight = document.getElementById('static-right');
@@ -533,7 +514,6 @@
         const flipBack = document.getElementById('flip-back');
         const totalPages = Math.ceil(charactersData.length / 2);
 
-        // 初始化标签
         function initTabs() {
             const tabsContainer = document.getElementById('tabs-container');
             for (let i = 0; i < totalPages; i++) {
@@ -545,14 +525,12 @@
             }
         }
 
-        // 更新标签状态
         function updateTabs() {
             document.querySelectorAll('.tab').forEach((t, i) => {
                 t.classList.toggle('active', i === currentPage);
             });
         }
 
-        // 初始化页面
         function initPages() {
             staticLeft.innerHTML = getCharHTML(charactersData[0]);
             if (charactersData[1]) {
@@ -565,12 +543,12 @@
             if (isLocked || currentPage >= totalPages - 1) return;
             isLocked = true;
 
-            const currentLeftIdx = currentPage * 2;
             const currentRightIdx = currentPage * 2 + 1;
             const nextLeftIdx = (currentPage + 1) * 2;
             const nextRightIdx = (currentPage + 1) * 2 + 1;
 
-            // 准备翻页纸：正面是当前右页，背面是下一页左页
+            // 翻页纸正面 = 当前右页（视觉上盖住 staticRight，保持画面不变）
+            // 翻页纸背面 = 下一页左页（翻过去后露出）
             if (charactersData[currentRightIdx]) {
                 flipFront.innerHTML = getCharHTML(charactersData[currentRightIdx]);
             }
@@ -578,28 +556,29 @@
                 flipBack.innerHTML = getCharHTML(charactersData[nextLeftIdx]);
             }
 
-            // 底层右侧立刻换成下一页右页
-            if (charactersData[nextRightIdx]) {
-                staticRight.innerHTML = getCharHTML(charactersData[nextRightIdx]);
-            } else {
-                staticRight.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:1.5rem;">End ♡</div>';
-            }
-
-            // 开始翻页
+            // 开始翻页动画
             flipper.classList.add('is-flipped');
 
             setTimeout(() => {
                 currentPage++;
-                // 翻页结束，底层左侧换成刚才翻过去的背面内容
+
+                // 翻页动画结束后，更新两侧静态页
+                // staticLeft 换成下一页左页
                 if (charactersData[nextLeftIdx]) {
                     staticLeft.innerHTML = getCharHTML(charactersData[nextLeftIdx]);
                 }
-                
-                // 瞬间重置翻页纸位置
+                // staticRight 换成下一页右页
+                if (charactersData[nextRightIdx]) {
+                    staticRight.innerHTML = getCharHTML(charactersData[nextRightIdx]);
+                } else {
+                    staticRight.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:1.5rem;">End ♡</div>';
+                }
+
+                // 瞬间重置翻页纸到初始位置（此时静态页已更新，flipper内容无所谓）
                 flipper.style.transition = 'none';
                 flipper.classList.remove('is-flipped');
-                
-                setTimeout(() => { 
+
+                setTimeout(() => {
                     flipper.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)';
                     isLocked = false;
                     updateTabs();
@@ -616,7 +595,8 @@
             const prevLeftIdx = (currentPage - 1) * 2;
             const prevRightIdx = (currentPage - 1) * 2 + 1;
 
-            // 准备翻页纸：背面是当前左页，正面是上一页右页
+            // 翻页纸背面 = 当前左页（从左往右翻回来时露出的内容）
+            // 翻页纸正面 = 上一页右页
             if (charactersData[currentLeftIdx]) {
                 flipBack.innerHTML = getCharHTML(charactersData[currentLeftIdx]);
             }
@@ -624,21 +604,22 @@
                 flipFront.innerHTML = getCharHTML(charactersData[prevRightIdx]);
             }
 
-            // 底层左侧立刻换成上一页左页
+            // staticLeft 立刻换成上一页左页（翻页纸从左侧翻回来，会盖住左侧，所以可以安全地立刻换）
             if (charactersData[prevLeftIdx]) {
                 staticLeft.innerHTML = getCharHTML(charactersData[prevLeftIdx]);
             }
 
-            // 先把翻页纸瞬间放到左边状态，然后往右边翻回来
+            // 先把翻页纸瞬间放到翻过去的状态（is-flipped），再动画翻回来
             flipper.style.transition = 'none';
             flipper.classList.add('is-flipped');
-            
+
             setTimeout(() => {
                 flipper.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)';
                 flipper.classList.remove('is-flipped');
 
                 setTimeout(() => {
                     currentPage--;
+                    // 翻回来后，staticRight 换成上一页右页
                     if (charactersData[prevRightIdx]) {
                         staticRight.innerHTML = getCharHTML(charactersData[prevRightIdx]);
                     }
@@ -652,7 +633,6 @@
         function jumpTo(pageIdx) {
             if (isLocked || pageIdx === currentPage || pageIdx < 0 || pageIdx >= totalPages) return;
             
-            // 简单实现：连续翻页
             if (pageIdx > currentPage) {
                 next();
                 setTimeout(() => {
@@ -666,19 +646,15 @@
             }
         }
 
-        // 跳转到角色详情页
         function goToDetail(charId) {
-            // 这里后续会跳转到详情页
             alert(`即将查看角色详情: ${charId}\n（详情页开发中...）`);
             // window.location.href = `character-detail.html?id=${charId}`;
         }
 
-        // 返回主页
         function goBack() {
             window.location.href = 'index.html';
         }
 
-        // 页面加载完成后初始化
         window.onload = () => {
             initTabs();
             initPages();
