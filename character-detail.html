@@ -147,7 +147,7 @@
         }
 
         .quote {
-            font-family: var(--font-handwrite); 
+            font-family: var(--font-cute-cn);
             font-size: 1.8rem;
             line-height: 1.5; 
             color: #555;
@@ -189,7 +189,8 @@
         .stat-box p { 
             font-weight: 800; 
             font-size: 1.1rem; 
-            color: var(--color-black); 
+            color: var(--color-black);
+            font-family: var(--font-cute-cn);
         }
 
         /* ================= 装饰元素 ================= */
@@ -356,6 +357,11 @@
             glow.style.top = e.clientY + 'px';
         });
 
+        // 跳转到角色详情页
+        function goToDetail(charId) {
+            window.location.href = `character-detail.html?id=${charId}`;
+        }
+
         // 从URL获取角色ID
         function getCharacterId() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -430,3 +436,4 @@
     </script>
 </body>
 </html>
+
